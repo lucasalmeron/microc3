@@ -1,12 +1,13 @@
 package main
 
 import (
-	log "github.com/micro/go-micro/v2/logger"
-	"github.com/micro/go-micro/v2"
-	"users/handler"
-	"users/subscriber"
+	"github.com/lucasalmeron/microc3/users/handler"
+	"github.com/lucasalmeron/microc3/users/subscriber"
 
-	users "users/proto/users"
+	"github.com/micro/go-micro/v2"
+	log "github.com/micro/go-micro/v2/logger"
+
+	users "github.com/lucasalmeron/microc3/users/proto/users"
 )
 
 func main() {
