@@ -5,13 +5,13 @@ MODIFY=Mproto/imports/api.proto=github.com/micro/go-micro/v2/api/proto
 .PHONY: proto
 proto:
     
-	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/users/users.proto
+	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. internal/proto/users.proto
     
 
 .PHONY: build
 build: proto
 
-	go build -o users-service *.go
+	go build -o users-service cmd/*.go
 
 .PHONY: test
 test:
@@ -20,3 +20,6 @@ test:
 .PHONY: docker
 docker:
 	docker build . -t users-service:latest
+
+run:
+	go run cmd/main.go

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package go.micro.service.users;
+
+service Users {
+	rpc CreateUser(RequestUser) returns (ResponseUser) {}
+}
+
+message Message {
+	string say = 1;
+}
+
+message ResponseUser {
+	string id = 1;
+	string firstName = 2;
+	string lastName = 3;
+	string documentNumber = 4;
+	string email = 5;
+	string phoneNumber = 6;
+	string GDEUser = 7;
+	string position = 8;
+}
+
+message RequestUser {
+	string firstName = 1;
+	string lastName = 2;
+	string documentNumber = 3;
+	string password = 4;
+	string email = 5;
+	string phoneNumber = 6;
+	string GDEUser = 7;
+	string position = 8;
+}
