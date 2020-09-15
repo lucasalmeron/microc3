@@ -1,6 +1,8 @@
 package user
 
-import "context"
+import (
+	"context"
+)
 
 var repository Repository
 
@@ -13,21 +15,21 @@ func (user *User) Validate() error {
 }
 
 func (user *User) GetUsers() ([]User, error) {
-	return repository.GetUsers(context.Background())
+	return repository.GetUsers(context.TODO())
 }
 
 func (user *User) GetUser(userID string) (*User, error) {
-	return repository.GetUser(context.Background(), userID)
+	return repository.GetUser(context.TODO(), userID)
 }
 
-func (user *User) CreateUser(newUser User) (*User, error) {
-	return repository.CreateUser(context.Background(), newUser)
+func (user *User) Save() (*User, error) {
+	if user.ID == "" {
+		return repository.Create(context.TODO(), *user)
+	} else {
+		return repository.Update(context.TODO(), *user)
+	}
 }
 
-func (user *User) UpdateUser(reqUser User) (*User, error) {
-	return repository.UpdateUser(context.Background(), reqUser)
-}
-
-func (user *User) DeleteUser(userID string) error {
-	return repository.DeleteUser(context.Background(), userID)
+func (user *User) Delete(userID string) (*User, error) {
+	return repository.Delete(context.TODO(), userID)
 }

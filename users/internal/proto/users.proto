@@ -1,13 +1,27 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package go.micro.service.users;
 
 service Users {
-	rpc CreateUser(RequestUser) returns (ResponseUser) {}
+	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}
+	rpc GetUser(RequestUserID) returns (ResponseUser) {}
+	rpc CreateUser(RequestCreateUser) returns (ResponseUser) {}
+	rpc UpdateUser(RequestUpdateUser) returns (ResponseUser) {}
+	rpc DeleteUser(RequestUserID) returns (ResponseUser) {}
 }
 
 message Message {
 	string say = 1;
+}
+
+message RequestUserID {
+	string id = 1;
+}
+
+message ResponseUsersArray {
+    repeated ResponseUser users = 1;
 }
 
 message ResponseUser {
@@ -19,9 +33,13 @@ message ResponseUser {
 	string phoneNumber = 6;
 	string GDEUser = 7;
 	string position = 8;
+
+	int64 createdAt = 9;
+	int64 modifiedAt = 10;
+	int64 deletedAt = 11;
 }
 
-message RequestUser {
+message RequestCreateUser {
 	string firstName = 1;
 	string lastName = 2;
 	string documentNumber = 3;
@@ -30,4 +48,16 @@ message RequestUser {
 	string phoneNumber = 6;
 	string GDEUser = 7;
 	string position = 8;
+}
+
+message RequestUpdateUser {
+	string id = 1;
+	string firstName = 2;
+	string lastName = 3;
+	string documentNumber = 4;
+	string password = 5;
+	string email = 6;
+	string phoneNumber = 7;
+	string GDEUser = 8;
+	string position = 9;
 }

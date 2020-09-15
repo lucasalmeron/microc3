@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/signal"
 
-	mongostorage "github.com/lucasalmeron/backtabgo/pkg/storage/mongo"
 	"github.com/lucasalmeron/microc3/users/internal/handler"
+	mongostorage "github.com/lucasalmeron/microc3/users/internal/storage"
 	"github.com/lucasalmeron/microc3/users/internal/subscriber"
 
 	"github.com/micro/go-micro/v2"
@@ -18,15 +18,14 @@ import (
 var (
 	mongoURI      = os.Getenv("MONGODB_URI")
 	mongoDataBase = os.Getenv("MONGODB_DB")
-	MicroServer   = new(gRPCServer)
 )
 
-type gRPCServer struct {
+type GRPCServer struct {
 	Addr         string
 	MicroService micro.Service
 }
 
-func (srv *gRPCServer) Init() {
+func (srv *GRPCServer) Init() {
 
 	srv.Addr = ":" + os.Getenv("PORT")
 
@@ -43,21 +42,37 @@ func (srv *gRPCServer) Init() {
 	// Initialise service
 	srv.MicroService.Init()
 
-	// Register Handler
-	users.RegisterUsersHandler(srv.MicroService.Server(), new(handler.Users))
-
-	// Register Struct as Subscriber
-	micro.RegisterSubscriber("go.micro.auth.test", srv.MicroService.Server(), new(subscriber.Users))
-
-	handler.NewPublisher(srv.MicroService.Client())
+	srv.registerHandlers()
+	srv.registerEventSubscribers()
 
 }
 
-func (srv *gRPCServer) ConnectMongoDB() error {
+func (srv *GRPCServer) registerHandlers() error {
+	log.Info("Registering Handlers")
+	// Register Handler
+	err := users.RegisterUsersHandler(srv.MicroService.Server(), new(handler.UsersHandler))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (srv *GRPCServer) registerEventSubscribers() error {
+	log.Info("Registering Subscribers")
+	// Register Struct as Subscriber
+	err := micro.RegisterSubscriber("go.micro.auth.test", srv.MicroService.Server(), new(subscriber.Users))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (srv *GRPCServer) ConnectMongoDB() error {
 	return mongostorage.NewMongoDBConnection(mongoURI, mongoDataBase)
 }
 
-func (s *gRPCServer) StartAndListen() {
+func (s *GRPCServer) StartAndListen() {
 	go s.waitForShutdown()
 
 	// Run service
@@ -66,7 +81,7 @@ func (s *gRPCServer) StartAndListen() {
 	}
 }
 
-func (s *gRPCServer) waitForShutdown() {
+func (s *GRPCServer) waitForShutdown() {
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
 	<-sigint

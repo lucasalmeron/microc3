@@ -6,6 +6,7 @@ package go_micro_service_users
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	math "math"
 )
 
@@ -42,7 +43,11 @@ func NewUsersEndpoints() []*api.Endpoint {
 // Client API for Users service
 
 type UsersService interface {
-	CreateUser(ctx context.Context, in *RequestUser, opts ...client.CallOption) (*ResponseUser, error)
+	GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error)
+	GetUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
+	CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error)
+	UpdateUser(ctx context.Context, in *RequestUpdateUser, opts ...client.CallOption) (*ResponseUser, error)
+	DeleteUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
 }
 
 type usersService struct {
@@ -57,8 +62,48 @@ func NewUsersService(name string, c client.Client) UsersService {
 	}
 }
 
-func (c *usersService) CreateUser(ctx context.Context, in *RequestUser, opts ...client.CallOption) (*ResponseUser, error) {
+func (c *usersService) GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error) {
+	req := c.c.NewRequest(c.name, "Users.GetUsers", in)
+	out := new(ResponseUsersArray)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) GetUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.GetUser", in)
+	out := new(ResponseUser)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error) {
 	req := c.c.NewRequest(c.name, "Users.CreateUser", in)
+	out := new(ResponseUser)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) UpdateUser(ctx context.Context, in *RequestUpdateUser, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.UpdateUser", in)
+	out := new(ResponseUser)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) DeleteUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.DeleteUser", in)
 	out := new(ResponseUser)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -70,12 +115,20 @@ func (c *usersService) CreateUser(ctx context.Context, in *RequestUser, opts ...
 // Server API for Users service
 
 type UsersHandler interface {
-	CreateUser(context.Context, *RequestUser, *ResponseUser) error
+	GetUsers(context.Context, *empty.Empty, *ResponseUsersArray) error
+	GetUser(context.Context, *RequestUserID, *ResponseUser) error
+	CreateUser(context.Context, *RequestCreateUser, *ResponseUser) error
+	UpdateUser(context.Context, *RequestUpdateUser, *ResponseUser) error
+	DeleteUser(context.Context, *RequestUserID, *ResponseUser) error
 }
 
 func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.HandlerOption) error {
 	type users interface {
-		CreateUser(ctx context.Context, in *RequestUser, out *ResponseUser) error
+		GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error
+		GetUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
+		CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error
+		UpdateUser(ctx context.Context, in *RequestUpdateUser, out *ResponseUser) error
+		DeleteUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
 	}
 	type Users struct {
 		users
@@ -88,6 +141,22 @@ type usersHandler struct {
 	UsersHandler
 }
 
-func (h *usersHandler) CreateUser(ctx context.Context, in *RequestUser, out *ResponseUser) error {
+func (h *usersHandler) GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error {
+	return h.UsersHandler.GetUsers(ctx, in, out)
+}
+
+func (h *usersHandler) GetUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error {
+	return h.UsersHandler.GetUser(ctx, in, out)
+}
+
+func (h *usersHandler) CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error {
 	return h.UsersHandler.CreateUser(ctx, in, out)
+}
+
+func (h *usersHandler) UpdateUser(ctx context.Context, in *RequestUpdateUser, out *ResponseUser) error {
+	return h.UsersHandler.UpdateUser(ctx, in, out)
+}
+
+func (h *usersHandler) DeleteUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error {
+	return h.UsersHandler.DeleteUser(ctx, in, out)
 }

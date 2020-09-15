@@ -3,10 +3,9 @@ package mongostorage
 import (
 	"context"
 	"fmt"
-	"log"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
-
+	log "github.com/micro/go-micro/v2/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -37,8 +36,7 @@ func NewMongoDBConnection(mongoURI string, database string) error {
 	if err != nil {
 		return err
 	}
-	//set deck Repository
-
+	//SET REPOSITORIES
 	user.SetRepository(NewUserService(mgo.connection))
 
 	return nil
@@ -65,7 +63,9 @@ func (mongoDB *MongoDB) connect() error {
 	}
 
 	mongoDB.connection = client.Database(mgo.database)
-	log.Println("MongoDB connection success")
+
+	log.Info("MongoDB connection success")
+
 	return nil
 }
 

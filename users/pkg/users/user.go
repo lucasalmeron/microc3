@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"time"
 )
 
 type User struct {
@@ -18,24 +17,24 @@ type User struct {
 
 	Admin       bool `json:"admin" bson:"admin"`
 	Permissions []struct {
-		Read        bool `json:"read" bson:"read"`
-		Write       bool `json:"write" bson:"write"`
-		Responsible bool `json:"responsible" bson:"responsible"`
-		Query       bool `json:"query" bson:"query"`
-		Health      bool `json:"health" bson:"health"`
-		QueryPoint  bool `json:"queryPoint" bson:"queryPoint"`
+		Read        bool   `json:"read" bson:"read"`
+		Write       bool   `json:"write" bson:"write"`
+		Responsible bool   `json:"responsible" bson:"responsible"`
+		Query       bool   `json:"query" bson:"query"`
+		Health      bool   `json:"health" bson:"health"`
+		QueryPoint  string `json:"queryPoint" bson:"queryPoint"`
 	} `json:"permissions" bson:"permissions"`
 
-	ModifierUser string    `json:"modifierUser" bson:"modifierUser"`
-	CreatedAt    time.Time `json:"createdAt" bson:"createdAt"`
-	ModifiedAt   time.Time `json:"modifiedAt" bson:"modifiedAt"`
-	DeletedAt    time.Time `json:"deletedAt" bson:"deletedAt"`
+	ModifierUser string `json:"modifierUser" bson:"modifierUser"`
+	CreatedAt    int64  `json:"createdAt" bson:"createdAt"`
+	ModifiedAt   int64  `json:"modifiedAt" bson:"modifiedAt"`
+	DeletedAt    int64  `json:"deletedAt" bson:"deletedAt"`
 }
 
 type Repository interface {
 	GetUsers(ctx context.Context) ([]User, error)
 	GetUser(ctx context.Context, userID string) (*User, error)
-	CreateUser(ctx context.Context, user User) (*User, error)
-	UpdateUser(ctx context.Context, user User) (*User, error)
-	DeleteUser(ctx context.Context, userID string) error
+	Create(ctx context.Context, user User) (*User, error)
+	Update(ctx context.Context, user User) (*User, error)
+	Delete(ctx context.Context, userID string) (*User, error)
 }
