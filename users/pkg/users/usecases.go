@@ -22,6 +22,10 @@ func (user *User) GetUser(userID string) (*User, error) {
 	return repository.GetUser(context.TODO(), userID)
 }
 
+func (user *User) GetPaginatedUsers(pageOptions *PageOptions) (*Page, error) {
+	return repository.GetPaginatedUsers(context.TODO(), pageOptions)
+}
+
 func (user *User) Save() (*User, error) {
 	if user.ID == "" {
 		return repository.Create(context.TODO(), *user)

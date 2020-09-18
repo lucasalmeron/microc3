@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/micro/go-micro/v2"
@@ -23,6 +24,22 @@ func NewPublisher(c client.Client) {
 	pub = micro.NewEvent("go.micro.users.created", c)
 }
 
+func buildUserResponse(user user.User) *protousers.ResponseUser {
+	return &protousers.ResponseUser{
+		Id:             user.ID,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		DocumentNumber: user.DocumentNumber,
+		Email:          user.Email,
+		PhoneNumber:    user.PhoneNumber,
+		GDEUser:        user.GDEUser,
+		Position:       user.Position,
+		CreatedAt:      user.CreatedAt,
+		ModifiedAt:     user.ModifiedAt,
+		DeletedAt:      user.DeletedAt,
+	}
+}
+
 type UsersHandler struct{}
 
 func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *protousers.ResponseUsersArray) error {
@@ -36,19 +53,7 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 
 	var response []*protousers.ResponseUser
 	for _, u := range users {
-		response = append(response, &protousers.ResponseUser{
-			Id:             u.ID,
-			FirstName:      u.FirstName,
-			LastName:       u.LastName,
-			DocumentNumber: u.DocumentNumber,
-			Email:          u.Email,
-			PhoneNumber:    u.PhoneNumber,
-			GDEUser:        u.GDEUser,
-			Position:       u.Position,
-			CreatedAt:      u.CreatedAt,
-			ModifiedAt:     u.ModifiedAt,
-			DeletedAt:      u.DeletedAt,
-		})
+		response = append(response, buildUserResponse(u))
 	}
 
 	res.Users = response
@@ -77,6 +82,45 @@ func (e *UsersHandler) GetUser(ctx context.Context, req *protousers.RequestUserI
 	res.CreatedAt = foundUser.CreatedAt
 	res.ModifiedAt = foundUser.ModifiedAt
 	res.DeletedAt = foundUser.DeletedAt
+
+	return nil
+}
+
+func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.RequestPageOptions, res *protousers.ResponsePage) error {
+	log.Info("Received Users.GetPaginatedUsers request")
+	pageOptions := new(user.PageOptions)
+	pageOptions.PageNumber = req.PageNumber
+	pageOptions.RegistersNumber = req.RegistersNumber
+	pageOptions.OrderBy.Field = req.OrderBy.Field
+	pageOptions.OrderBy.Value = req.OrderBy.Value
+	for _, filter := range req.Filters {
+		pageOptions.Filters = append(pageOptions.Filters, user.Filter{filter.Field, filter.Value})
+	}
+
+	reqUser := new(user.User)
+
+	fmt.Println(pageOptions)
+
+	paginatedUsers, err := reqUser.GetPaginatedUsers(pageOptions)
+	if err != nil {
+		log.Error(err)
+		status.Error(codes.Internal, err.Error())
+	}
+
+	fmt.Println(paginatedUsers)
+
+	paginatedUsers.CalcNumberOfPages(pageOptions)
+	//RESPONSE
+	res.Length = paginatedUsers.Length
+	res.Data = make([]*protousers.ResponseUser, len(paginatedUsers.Data))
+	res.PageNumber = paginatedUsers.PageNumber
+	res.NumberOfPages = paginatedUsers.NumberOfPages
+
+	fmt.Println(res)
+
+	for i, u := range paginatedUsers.Data {
+		res.Data[i] = buildUserResponse(u)
+	}
 
 	return nil
 }

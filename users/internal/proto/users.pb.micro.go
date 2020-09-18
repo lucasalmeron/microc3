@@ -43,6 +43,7 @@ func NewUsersEndpoints() []*api.Endpoint {
 // Client API for Users service
 
 type UsersService interface {
+	GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error)
 	GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error)
 	GetUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
 	CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error)
@@ -60,6 +61,16 @@ func NewUsersService(name string, c client.Client) UsersService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *usersService) GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error) {
+	req := c.c.NewRequest(c.name, "Users.GetPaginatedUsers", in)
+	out := new(ResponsePage)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *usersService) GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error) {
@@ -115,6 +126,7 @@ func (c *usersService) DeleteUser(ctx context.Context, in *RequestUserID, opts .
 // Server API for Users service
 
 type UsersHandler interface {
+	GetPaginatedUsers(context.Context, *RequestPageOptions, *ResponsePage) error
 	GetUsers(context.Context, *empty.Empty, *ResponseUsersArray) error
 	GetUser(context.Context, *RequestUserID, *ResponseUser) error
 	CreateUser(context.Context, *RequestCreateUser, *ResponseUser) error
@@ -124,6 +136,7 @@ type UsersHandler interface {
 
 func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.HandlerOption) error {
 	type users interface {
+		GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error
 		GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error
 		GetUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
 		CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error
@@ -139,6 +152,10 @@ func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.Han
 
 type usersHandler struct {
 	UsersHandler
+}
+
+func (h *usersHandler) GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error {
+	return h.UsersHandler.GetPaginatedUsers(ctx, in, out)
 }
 
 func (h *usersHandler) GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error {

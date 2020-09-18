@@ -69,6 +69,134 @@ func (service *UserService) GetUser(ctx context.Context, userID string) (*user.U
 	return &user, nil
 }
 
+func (service *UserService) GetPaginatedUsers(ctx context.Context, pageOptions *user.PageOptions) (*user.Page, error) {
+
+	queryMap := make(map[string]primitive.A)
+	queryMap["id"] = bson.A{}
+	queryMap["firstName"] = bson.A{}
+	queryMap["lastName"] = bson.A{}
+	queryMap["documentNumber"] = bson.A{}
+	queryMap["email"] = bson.A{}
+	queryMap["position"] = bson.A{}
+	queryAnd := bson.A{}
+
+	if len(pageOptions.Filters) > 0 {
+		for _, filter := range pageOptions.Filters {
+			switch filter.Field {
+			case "id":
+				objectId, err := primitive.ObjectIDFromHex(filter.Value)
+				if err != nil {
+					log.Println(err)
+					return nil, err
+				}
+				queryMap["id"] = append(queryMap["id"], bson.D{{"_id", objectId}})
+			case "firstName":
+				queryMap["firstName"] = append(queryMap["firstName"], bson.D{{"firstName", filter.Value}})
+			case "lastName":
+				queryMap["lastName"] = append(queryMap["lastName"], bson.D{{"lastName", filter.Value}})
+			case "documentNumber":
+				queryMap["documentNumber"] = append(queryMap["documentNumber"], bson.D{{"documentNumber", filter.Value}})
+			case "email":
+				queryMap["email"] = append(queryMap["email"], bson.D{{"email", filter.Value}})
+			case "position":
+				queryMap["position"] = append(queryMap["position"], bson.D{{"position", filter.Value}})
+			case "queryPoint":
+
+			}
+		}
+		for _, value := range queryMap {
+			if len(value) > 0 {
+				queryAnd = append(queryAnd, bson.D{{"$or", value}})
+			}
+		}
+	}
+
+	buildBSONOrderBy := func(field string, order string) primitive.D {
+		if order == "asc" {
+			return bson.D{{"$sort", bson.D{{field, 1}}}}
+		}
+		return bson.D{{"$sort", bson.D{{field, -1}}}}
+	}
+
+	var sortStage primitive.D
+	switch pageOptions.OrderBy.Field {
+	case "firstName":
+		sortStage = buildBSONOrderBy("firstName", pageOptions.OrderBy.Value)
+	case "lastName":
+		sortStage = buildBSONOrderBy("lastName", pageOptions.OrderBy.Value)
+	case "documentNumber":
+		sortStage = buildBSONOrderBy("documentNumber", pageOptions.OrderBy.Value)
+	case "email":
+		sortStage = buildBSONOrderBy("email", pageOptions.OrderBy.Value)
+	case "createdAt":
+		sortStage = buildBSONOrderBy("createdAt", pageOptions.OrderBy.Value)
+	case "modifiedAt":
+		sortStage = buildBSONOrderBy("modifiedAt", pageOptions.OrderBy.Value)
+	default:
+		sortStage = buildBSONOrderBy("createdAt", "desc")
+	}
+
+	projectStage1 := bson.D{{"$project", bson.M{
+		"_id":            "$_id",
+		"firstName":      "$firstName",
+		"lastName":       "$lastName",
+		"documentNumber": "$documentNumber",
+		"password":       "$password",
+		"email":          "$email",
+		"phoneNumber":    "$phoneNumber",
+		"GDEUser":        "$GDEUser",
+		"position":       "$position",
+		"createdAt":      "$createdAt",
+		"modifiedAt":     "$modifiedAt",
+		"deletedAt":      "$deletedAt",
+	}}}
+	matchStage := bson.D{{"$match", bson.D{{"$and", queryAnd}}}}
+	groupStage := bson.D{
+		{"$group", bson.D{
+			{"_id", nil},
+			{"count", bson.D{{"$sum", 1}}},
+			{"users", bson.D{{"$push",
+				bson.M{
+					"_id":            "$_id",
+					"firstName":      "$firstName",
+					"lastName":       "$lastName",
+					"documentNumber": "$documentNumber",
+					"password":       "$password",
+					"email":          "$email",
+					"phoneNumber":    "$phoneNumber",
+					"GDEUser":        "$GDEUser",
+					"position":       "$position",
+					"createdAt":      "$createdAt",
+					"modifiedAt":     "$modifiedAt",
+					"deletedAt":      "$deletedAt",
+				},
+			}},
+			}},
+		}}
+	projectStage2 := bson.D{{"$project", bson.D{
+		{"data", bson.D{{"$slice", bson.A{"$users", pageOptions.RegistersNumber * (pageOptions.PageNumber - 1), pageOptions.RegistersNumber}}}},
+		{"length", "$count"},
+	}}}
+
+	cursor, err := service.collection.Aggregate(ctx, mongo.Pipeline{projectStage1, matchStage, sortStage, groupStage, projectStage2})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var results []user.Page
+	if err = cursor.All(ctx, &results); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	if len(results) == 0 {
+		return &user.Page{}, nil
+	}
+
+	return &results[0], nil
+}
+
 func (service *UserService) Create(ctx context.Context, reqUser user.User) (*user.User, error) {
 
 	BSONObj := service.buildBsonObject(reqUser)
@@ -100,7 +228,7 @@ func (service *UserService) Update(ctx context.Context, reqUser user.User) (*use
 	}
 
 	BSONObj := service.buildBsonObject(reqUser)
-	BSONObj = append(BSONObj, bson.E{"modifiedAt", time.Now().Unix()})
+	BSONObj = append(BSONObj, bson.E{Key: "modifiedAt", Value: time.Now().Unix()})
 
 	err = service.collection.FindOneAndUpdate(
 		ctx,

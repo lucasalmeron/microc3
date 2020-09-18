@@ -5,6 +5,7 @@ import "google/protobuf/empty.proto";
 package go.micro.service.users;
 
 service Users {
+	rpc GetPaginatedUsers(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}
 	rpc GetUser(RequestUserID) returns (ResponseUser) {}
 	rpc CreateUser(RequestCreateUser) returns (ResponseUser) {}
@@ -23,6 +24,26 @@ message RequestUserID {
 message ResponseUsersArray {
     repeated ResponseUser users = 1;
 }
+
+message RequestPageOptions {
+	message Filter {
+		string field = 1;
+		string value = 2;
+	}
+
+	int64 pageNumber = 1;
+	int64 registersNumber = 2;
+	Filter orderBy = 3;
+	repeated Filter filters = 4;
+}
+
+message ResponsePage {
+	int64 length = 1;
+	int64 pageNumber = 2;
+	int64 numberOfPages = 3;
+	repeated ResponseUser data = 4;
+}
+
 
 message ResponseUser {
 	string id = 1;
