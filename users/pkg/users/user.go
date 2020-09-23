@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"math"
 )
 
 type User struct {
@@ -34,7 +33,8 @@ type User struct {
 
 type Repository interface {
 	GetUsers(ctx context.Context) ([]User, error)
-	GetUser(ctx context.Context, userID string) (*User, error)
+	GetUserByID(ctx context.Context, userID string) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetPaginatedUsers(ctx context.Context, pageOpt *PageOptions) (*Page, error)
 	Create(ctx context.Context, user User) (*User, error)
 	Update(ctx context.Context, user User) (*User, error)
@@ -48,11 +48,6 @@ type Page struct {
 	PageNumber    int64  `json:"pageNumber" bson:"pageNumber"`
 	NumberOfPages int64  `json:"registersNumber" bson:"numberOfPages"`
 	Length        int64  `json:"length" bson:"length"`
-}
-
-func (p *Page) CalcNumberOfPages(pageOptions *PageOptions) {
-	p.PageNumber = pageOptions.PageNumber
-	p.NumberOfPages = int64(math.Ceil(float64(p.Length) / float64(pageOptions.RegistersNumber)))
 }
 
 type PageOptions struct {

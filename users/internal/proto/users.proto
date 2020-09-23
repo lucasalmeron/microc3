@@ -7,7 +7,8 @@ package go.micro.service.users;
 service Users {
 	rpc GetPaginatedUsers(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}
-	rpc GetUser(RequestUserID) returns (ResponseUser) {}
+	rpc GetUserByID(RequestUserID) returns (ResponseUser) {}
+	rpc GetUserByEmail(RequestUserEmail) returns (ResponseUser) {}
 	rpc CreateUser(RequestCreateUser) returns (ResponseUser) {}
 	rpc UpdateUser(RequestUpdateUser) returns (ResponseUser) {}
 	rpc DeleteUser(RequestUserID) returns (ResponseUser) {}
@@ -19,6 +20,10 @@ message Message {
 
 message RequestUserID {
 	string id = 1;
+}
+
+message RequestUserEmail {
+	string email = 1;
 }
 
 message ResponseUsersArray {
@@ -65,10 +70,11 @@ message RequestCreateUser {
 	string lastName = 2;
 	string documentNumber = 3;
 	string password = 4;
-	string email = 5;
-	string phoneNumber = 6;
-	string GDEUser = 7;
-	string position = 8;
+	string repassword = 5;
+	string email = 6;
+	string phoneNumber = 7;
+	string GDEUser = 8;
+	string position = 9;
 }
 
 message RequestUpdateUser {

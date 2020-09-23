@@ -45,7 +45,8 @@ func NewUsersEndpoints() []*api.Endpoint {
 type UsersService interface {
 	GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error)
 	GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error)
-	GetUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
+	GetUserByID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
+	GetUserByEmail(ctx context.Context, in *RequestUserEmail, opts ...client.CallOption) (*ResponseUser, error)
 	CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error)
 	UpdateUser(ctx context.Context, in *RequestUpdateUser, opts ...client.CallOption) (*ResponseUser, error)
 	DeleteUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
@@ -83,8 +84,18 @@ func (c *usersService) GetUsers(ctx context.Context, in *empty.Empty, opts ...cl
 	return out, nil
 }
 
-func (c *usersService) GetUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error) {
-	req := c.c.NewRequest(c.name, "Users.GetUser", in)
+func (c *usersService) GetUserByID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.GetUserByID", in)
+	out := new(ResponseUser)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) GetUserByEmail(ctx context.Context, in *RequestUserEmail, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.GetUserByEmail", in)
 	out := new(ResponseUser)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -128,7 +139,8 @@ func (c *usersService) DeleteUser(ctx context.Context, in *RequestUserID, opts .
 type UsersHandler interface {
 	GetPaginatedUsers(context.Context, *RequestPageOptions, *ResponsePage) error
 	GetUsers(context.Context, *empty.Empty, *ResponseUsersArray) error
-	GetUser(context.Context, *RequestUserID, *ResponseUser) error
+	GetUserByID(context.Context, *RequestUserID, *ResponseUser) error
+	GetUserByEmail(context.Context, *RequestUserEmail, *ResponseUser) error
 	CreateUser(context.Context, *RequestCreateUser, *ResponseUser) error
 	UpdateUser(context.Context, *RequestUpdateUser, *ResponseUser) error
 	DeleteUser(context.Context, *RequestUserID, *ResponseUser) error
@@ -138,7 +150,8 @@ func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.Han
 	type users interface {
 		GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error
 		GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error
-		GetUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
+		GetUserByID(ctx context.Context, in *RequestUserID, out *ResponseUser) error
+		GetUserByEmail(ctx context.Context, in *RequestUserEmail, out *ResponseUser) error
 		CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error
 		UpdateUser(ctx context.Context, in *RequestUpdateUser, out *ResponseUser) error
 		DeleteUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
@@ -162,8 +175,12 @@ func (h *usersHandler) GetUsers(ctx context.Context, in *empty.Empty, out *Respo
 	return h.UsersHandler.GetUsers(ctx, in, out)
 }
 
-func (h *usersHandler) GetUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error {
-	return h.UsersHandler.GetUser(ctx, in, out)
+func (h *usersHandler) GetUserByID(ctx context.Context, in *RequestUserID, out *ResponseUser) error {
+	return h.UsersHandler.GetUserByID(ctx, in, out)
+}
+
+func (h *usersHandler) GetUserByEmail(ctx context.Context, in *RequestUserEmail, out *ResponseUser) error {
+	return h.UsersHandler.GetUserByEmail(ctx, in, out)
 }
 
 func (h *usersHandler) CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error {

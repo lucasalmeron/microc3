@@ -17,11 +17,15 @@ import (
 )
 
 var (
-	pub micro.Publisher
+	pubCreated  micro.Event
+	pubMofidied micro.Event
+	pubDeleted  micro.Event
 )
 
-func NewPublisher(c client.Client) {
-	pub = micro.NewEvent("go.micro.users.created", c)
+func InitEvents(c client.Client) {
+	pubCreated = micro.NewEvent("go.micro.users.created", c)
+	pubMofidied = micro.NewEvent("go.micro.users.modified", c)
+	pubDeleted = micro.NewEvent("go.micro.users.deleted", c)
 }
 
 func buildUserResponse(user user.User) *protousers.ResponseUser {
@@ -48,7 +52,7 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 	users, err := reqUser.GetUsers()
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	var response []*protousers.ResponseUser
@@ -61,13 +65,38 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 	return nil
 }
 
-func (e *UsersHandler) GetUser(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
+func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
 	reqUser := new(user.User)
-	foundUser, err := reqUser.GetUser(req.Id)
+	foundUser, err := reqUser.GetUserbyID(req.Id)
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE+
+	res.Id = foundUser.ID
+	res.FirstName = foundUser.FirstName
+	res.LastName = foundUser.LastName
+	res.DocumentNumber = foundUser.DocumentNumber
+	res.Email = foundUser.Email
+	res.PhoneNumber = foundUser.PhoneNumber
+	res.GDEUser = foundUser.GDEUser
+	res.Position = foundUser.Position
+	res.CreatedAt = foundUser.CreatedAt
+	res.ModifiedAt = foundUser.ModifiedAt
+	res.DeletedAt = foundUser.DeletedAt
+
+	return nil
+}
+
+func (e *UsersHandler) GetUserByEmail(ctx context.Context, req *protousers.RequestUserEmail, res *protousers.ResponseUser) error {
+	log.Info("Received Users.GetUser request")
+	reqUser := new(user.User)
+	foundUser, err := reqUser.GetUserbyEmail(req.Email)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE+
@@ -96,6 +125,7 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 	for _, filter := range req.Filters {
 		pageOptions.Filters = append(pageOptions.Filters, user.Filter{filter.Field, filter.Value})
 	}
+	pageOptions.Validate()
 
 	reqUser := new(user.User)
 
@@ -104,10 +134,8 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 	paginatedUsers, err := reqUser.GetPaginatedUsers(pageOptions)
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
-
-	fmt.Println(paginatedUsers)
 
 	paginatedUsers.CalcNumberOfPages(pageOptions)
 	//RESPONSE
@@ -115,8 +143,6 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 	res.Data = make([]*protousers.ResponseUser, len(paginatedUsers.Data))
 	res.PageNumber = paginatedUsers.PageNumber
 	res.NumberOfPages = paginatedUsers.NumberOfPages
-
-	fmt.Println(res)
 
 	for i, u := range paginatedUsers.Data {
 		res.Data[i] = buildUserResponse(u)
@@ -127,6 +153,10 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 
 func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCreateUser, res *protousers.ResponseUser) error {
 	log.Info("Received Users.CreateUser request")
+	if req.Password != req.Repassword {
+		return status.Error(codes.InvalidArgument, "Passwords do not match")
+	}
+
 	reqUser := &user.User{
 		FirstName:      req.FirstName,
 		LastName:       req.LastName,
@@ -138,10 +168,29 @@ func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCr
 		Position:       req.Position,
 	}
 
+	err := reqUser.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+	exist, err := reqUser.GetUserbyEmail(reqUser.Email)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+	if exist.ID != "" {
+		return status.Error(codes.InvalidArgument, "User already exist")
+	}
+	err = reqUser.EncryptPassword()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	createdUser, err := reqUser.Save()
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
@@ -156,6 +205,11 @@ func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCr
 	res.CreatedAt = createdUser.CreatedAt
 	res.ModifiedAt = createdUser.ModifiedAt
 	res.DeletedAt = createdUser.DeletedAt
+
+	err = pubCreated.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
 
 	return nil
 }
@@ -177,7 +231,7 @@ func (e *UsersHandler) UpdateUser(ctx context.Context, req *protousers.RequestUp
 	updatedUser, err := reqUser.Save()
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
@@ -193,6 +247,11 @@ func (e *UsersHandler) UpdateUser(ctx context.Context, req *protousers.RequestUp
 	res.ModifiedAt = updatedUser.ModifiedAt
 	res.DeletedAt = updatedUser.DeletedAt
 
+	err = pubMofidied.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
+
 	return nil
 }
 
@@ -202,7 +261,7 @@ func (e *UsersHandler) DeleteUser(ctx context.Context, req *protousers.RequestUs
 	deletedUser, err := reqUser.Delete(req.Id)
 	if err != nil {
 		log.Error(err)
-		status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
@@ -217,6 +276,11 @@ func (e *UsersHandler) DeleteUser(ctx context.Context, req *protousers.RequestUs
 	res.CreatedAt = deletedUser.CreatedAt
 	res.ModifiedAt = deletedUser.ModifiedAt
 	res.DeletedAt = deletedUser.DeletedAt
+
+	err = pubDeleted.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
 
 	return nil
 }

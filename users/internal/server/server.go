@@ -21,17 +21,10 @@ var (
 )
 
 type GRPCServer struct {
-	Addr         string
 	MicroService micro.Service
 }
 
 func (srv *GRPCServer) Init() {
-
-	srv.Addr = ":" + os.Getenv("PORT")
-
-	if os.Getenv("PORT") == "" {
-		srv.Addr = "127.0.0.1:3500"
-	}
 
 	// New Service
 	srv.MicroService = micro.NewService(
@@ -49,6 +42,8 @@ func (srv *GRPCServer) Init() {
 
 func (srv *GRPCServer) registerHandlers() error {
 	log.Info("Registering Handlers")
+	//INIT EVENTS
+	handler.InitEvents(srv.MicroService.Client())
 	// Register Handler
 	err := users.RegisterUsersHandler(srv.MicroService.Server(), new(handler.UsersHandler))
 	if err != nil {

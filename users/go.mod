@@ -13,6 +13,7 @@ require (
 	github.com/micro/go-plugins/broker/rabbitmq v0.0.0-20200119172437-4fe21aa238fd // indirect
 	github.com/micro/go-plugins/broker/rabbitmq/v2 v2.9.1
 	go.mongodb.org/mongo-driver v1.3.4
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
 	google.golang.org/grpc v1.28.0
 	google.golang.org/protobuf v1.25.0
 )

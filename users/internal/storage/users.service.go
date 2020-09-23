@@ -52,7 +52,7 @@ func (service *UserService) GetUsers(ctx context.Context) ([]user.User, error) {
 	return results, nil
 }
 
-func (service *UserService) GetUser(ctx context.Context, userID string) (*user.User, error) {
+func (service *UserService) GetUserByID(ctx context.Context, userID string) (*user.User, error) {
 
 	objectId, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -61,6 +61,18 @@ func (service *UserService) GetUser(ctx context.Context, userID string) (*user.U
 	}
 	var user user.User
 	err = service.collection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (service *UserService) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
+
+	var user user.User
+	err := service.collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
 	if err != nil {
 		log.Println(err)
 		return nil, err
