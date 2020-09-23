@@ -4,6 +4,8 @@ import "google/protobuf/empty.proto";
 
 package go.micro.service.users;
 
+option go_package = "github.com/lucasalmeron/microc3/users/pkg/users/proto";
+
 service Users {
 	rpc GetPaginatedUsers(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}

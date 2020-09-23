@@ -35,7 +35,7 @@ func (service *UserService) buildBsonObject(user user.User) bson.D {
 
 }
 
-func (service *UserService) GetUsers(ctx context.Context) ([]user.User, error) {
+func (service *UserService) GetList(ctx context.Context) ([]user.User, error) {
 
 	cursor, err := service.collection.Find(ctx, bson.D{{}})
 	if err != nil {
@@ -52,7 +52,7 @@ func (service *UserService) GetUsers(ctx context.Context) ([]user.User, error) {
 	return results, nil
 }
 
-func (service *UserService) GetUserByID(ctx context.Context, userID string) (*user.User, error) {
+func (service *UserService) GetByID(ctx context.Context, userID string) (*user.User, error) {
 
 	objectId, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -61,6 +61,9 @@ func (service *UserService) GetUserByID(ctx context.Context, userID string) (*us
 	}
 	var user user.User
 	err = service.collection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
+	if err.Error() == "mongo: no documents in result" {
+		return &user, nil
+	}
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -69,10 +72,13 @@ func (service *UserService) GetUserByID(ctx context.Context, userID string) (*us
 	return &user, nil
 }
 
-func (service *UserService) GetUserByEmail(ctx context.Context, email string) (*user.User, error) {
+func (service *UserService) GetByEmail(ctx context.Context, email string) (*user.User, error) {
 
 	var user user.User
 	err := service.collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
+	if err.Error() == "mongo: no documents in result" {
+		return &user, nil
+	}
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -81,7 +87,7 @@ func (service *UserService) GetUserByEmail(ctx context.Context, email string) (*
 	return &user, nil
 }
 
-func (service *UserService) GetPaginatedUsers(ctx context.Context, pageOptions *user.PageOptions) (*user.Page, error) {
+func (service *UserService) GetPaginated(ctx context.Context, pageOptions *user.PageOptions) (*user.Page, error) {
 
 	queryMap := make(map[string]primitive.A)
 	queryMap["id"] = bson.A{}
@@ -218,6 +224,7 @@ func (service *UserService) Create(ctx context.Context, reqUser user.User) (*use
 		ctx,
 		BSONObj,
 	)
+
 	if err != nil {
 		return nil, err
 	}

@@ -49,7 +49,7 @@ type UsersHandler struct{}
 func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *protousers.ResponseUsersArray) error {
 	log.Info("Received Users.GetUsers request")
 	reqUser := new(user.User)
-	users, err := reqUser.GetUsers()
+	users, err := reqUser.GetList()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
@@ -68,7 +68,7 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
 	reqUser := new(user.User)
-	foundUser, err := reqUser.GetUserbyID(req.Id)
+	foundUser, err := reqUser.GetbyID(req.Id)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
@@ -93,7 +93,7 @@ func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestU
 func (e *UsersHandler) GetUserByEmail(ctx context.Context, req *protousers.RequestUserEmail, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
 	reqUser := new(user.User)
-	foundUser, err := reqUser.GetUserbyEmail(req.Email)
+	foundUser, err := reqUser.GetbyEmail(req.Email)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
@@ -131,7 +131,7 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 
 	fmt.Println(pageOptions)
 
-	paginatedUsers, err := reqUser.GetPaginatedUsers(pageOptions)
+	paginatedUsers, err := reqUser.GetPaginated(pageOptions)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
@@ -168,14 +168,15 @@ func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCr
 		Position:       req.Position,
 	}
 
+	fmt.Println(reqUser)
+
 	err := reqUser.Validate()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
-	exist, err := reqUser.GetUserbyEmail(reqUser.Email)
+	exist, err := reqUser.GetbyEmail(reqUser.Email)
 	if err != nil {
-		log.Error(err)
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
 	if exist.ID != "" {

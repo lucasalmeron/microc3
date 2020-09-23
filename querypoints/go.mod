@@ -8,7 +8,7 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
 	github.com/golang/protobuf v1.4.2
-	github.com/lucasalmeron/microc3/users v0.0.0-20200923192511-5b9abbe43b09
+	github.com/lucasalmeron/microc3/users v0.0.0-20200923231205-cdef43fcb4be
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/micro/go-plugins/broker/rabbitmq/v2 v2.9.1
 	go.mongodb.org/mongo-driver v1.3.4

@@ -51,19 +51,19 @@ func (user *User) ComparePasswords(password string) bool {
 	return true
 }
 
-func (user *User) GetUsers() ([]User, error) {
-	return repository.GetUsers(context.TODO())
+func (user *User) GetList() ([]User, error) {
+	return repository.GetList(context.TODO())
 }
 
-func (user *User) GetUserbyID(userID string) (*User, error) {
-	return repository.GetUserByID(context.TODO(), userID)
+func (user *User) GetbyID(userID string) (*User, error) {
+	return repository.GetByID(context.TODO(), userID)
 }
-func (user *User) GetUserbyEmail(email string) (*User, error) {
-	return repository.GetUserByEmail(context.TODO(), email)
+func (user *User) GetbyEmail(email string) (*User, error) {
+	return repository.GetByEmail(context.TODO(), email)
 }
 
-func (user *User) GetPaginatedUsers(pageOptions *PageOptions) (*Page, error) {
-	return repository.GetPaginatedUsers(context.TODO(), pageOptions)
+func (user *User) GetPaginated(pageOptions *PageOptions) (*Page, error) {
+	return repository.GetPaginated(context.TODO(), pageOptions)
 }
 
 func (user *User) Save() (*User, error) {

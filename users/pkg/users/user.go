@@ -32,10 +32,10 @@ type User struct {
 }
 
 type Repository interface {
-	GetUsers(ctx context.Context) ([]User, error)
-	GetUserByID(ctx context.Context, userID string) (*User, error)
-	GetUserByEmail(ctx context.Context, email string) (*User, error)
-	GetPaginatedUsers(ctx context.Context, pageOpt *PageOptions) (*Page, error)
+	GetList(ctx context.Context) ([]User, error)
+	GetByID(ctx context.Context, userID string) (*User, error)
+	GetByEmail(ctx context.Context, email string) (*User, error)
+	GetPaginated(ctx context.Context, pageOpt *PageOptions) (*Page, error)
 	Create(ctx context.Context, user User) (*User, error)
 	Update(ctx context.Context, user User) (*User, error)
 	Delete(ctx context.Context, userID string) (*User, error)
