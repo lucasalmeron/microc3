@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package go.micro.service.users;
+
+service QueryPoints {
+	rpc GetPaginated(RequestPageOptions) returns (ResponsePage) {}
+	rpc GetList(google.protobuf.Empty) returns (ResponseQueryPointsArray) {}
+	rpc GetByID(RequestQueryPointID) returns (ResponseQueryPoint) {}
+	rpc Create(RequestCreateQueryPoint) returns (ResponseQueryPoint) {}
+	rpc Update(RequestUpdateQueryPoint) returns (ResponseQueryPoint) {}
+	rpc Delete(RequestQueryPointID) returns (ResponseQueryPoint) {}
+}
+
+message Message {
+	string say = 1;
+}
+
+message RequestQueryPointID {
+	string id = 1;
+}
+
+message ResponseQueryPointsArray {
+    repeated ResponseQueryPoint queryPoints = 1;
+}
+
+message RequestPageOptions {
+	message Filter {
+		string field = 1;
+		string value = 2;
+	}
+
+	int64 pageNumber = 1;
+	int64 registersNumber = 2;
+	Filter orderBy = 3;
+	repeated Filter filters = 4;
+}
+
+message ResponsePage {
+	int64 length = 1;
+	int64 pageNumber = 2;
+	int64 numberOfPages = 3;
+	repeated ResponseQueryPoint data = 4;
+}
+
+
+message ResponseQueryPoint {
+	string id = 1;
+	string name = 2;
+	string phone = 3;
+	string address = 4;
+	string district = 5;
+	string department = 6;
+	repeated string responsibles = 7;
+	repeated string actions = 8;
+
+	int64 createdAt = 9;
+	int64 modifiedAt = 10;
+	int64 deletedAt = 11;
+}
+
+message RequestCreateQueryPoint {
+	string name = 1;
+	string phone = 2;
+	string address = 3;
+	string district = 4;
+	string department = 5;
+	repeated string responsibles = 6;
+	repeated string actions = 7;
+}
+
+message RequestUpdateQueryPoint {
+	string id = 1;
+	string name = 2;
+	string phone = 3;
+	string address = 4;
+	string district = 5;
+	string department = 6;
+	repeated string responsibles = 7;
+	repeated string actions = 8;
+}

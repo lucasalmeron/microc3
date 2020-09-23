@@ -5,14 +5,14 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/lucasalmeron/microc3/users/internal/handler"
-	mongostorage "github.com/lucasalmeron/microc3/users/internal/storage"
-	"github.com/lucasalmeron/microc3/users/internal/subscriber"
+	"github.com/lucasalmeron/microc3/querypoints/internal/handler"
+	mongostorage "github.com/lucasalmeron/microc3/querypoints/internal/storage"
+	"github.com/lucasalmeron/microc3/querypoints/internal/subscriber"
 
 	"github.com/micro/go-micro/v2"
 	log "github.com/micro/go-micro/v2/logger"
 
-	users "github.com/lucasalmeron/microc3/users/pkg/users/proto"
+	querypoints "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
 )
 
 var (
@@ -28,7 +28,7 @@ func (srv *GRPCServer) Init() {
 
 	// New Service
 	srv.MicroService = micro.NewService(
-		micro.Name("go.micro.service.users"),
+		micro.Name("go.micro.service.querypoints"),
 		micro.Version("latest"),
 	)
 
@@ -45,7 +45,8 @@ func (srv *GRPCServer) registerHandlers() error {
 	//INIT EVENTS
 	handler.InitEvents(srv.MicroService.Client())
 	// Register Handler
-	err := users.RegisterUsersHandler(srv.MicroService.Server(), new(handler.UsersHandler))
+
+	err := querypoints.RegisterQueryPointsHandler(srv.MicroService.Server(), new(handler.QueryPointsHandler))
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func (srv *GRPCServer) registerHandlers() error {
 func (srv *GRPCServer) registerEventSubscribers() error {
 	log.Info("Registering Subscribers")
 	// Register Struct as Subscriber
-	err := micro.RegisterSubscriber("go.micro.auth.test", srv.MicroService.Server(), new(subscriber.Users))
+	err := micro.RegisterSubscriber("go.micro.users.created", srv.MicroService.Server(), new(subscriber.QueryPoints))
 	if err != nil {
 		return err
 	}

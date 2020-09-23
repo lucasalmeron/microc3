@@ -1,4 +1,4 @@
-module github.com/lucasalmeron/microc3/users
+module github.com/lucasalmeron/microc3/querypoints
 
 go 1.14
 
@@ -8,15 +8,10 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
 	github.com/golang/protobuf v1.4.2
-	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/lucasalmeron/microc3/users v0.0.0-20200923192511-5b9abbe43b09
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/micro/go-plugins/broker/rabbitmq/v2 v2.9.1
 	go.mongodb.org/mongo-driver v1.3.4
-	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
-	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
-	golang.org/x/tools v0.0.0-20200331025713-a30bf2db82d4 // indirect
 	google.golang.org/grpc v1.28.0
 	google.golang.org/protobuf v1.25.0
-	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )
