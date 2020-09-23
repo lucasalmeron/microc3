@@ -22,16 +22,15 @@ func NewQueryPointService(db *mongo.Database) querypoint.Repository {
 	return &QueryPointService{db, db.Collection("querypoints")}
 }
 
-func (service *QueryPointService) buildBsonObject(user querypoint.QueryPoint) bson.D {
+func (service *QueryPointService) buildBsonObject(querypoint querypoint.QueryPoint) bson.D {
 	return bson.D{
-		{"firstName", user.FirstName},
-		{"lastName", user.LastName},
-		{"documentNumber", user.DocumentNumber},
-		{"password", user.Password},
-		{"email", user.Email},
-		{"phoneNumber", user.PhoneNumber},
-		{"GDEUser", user.GDEUser},
-		{"position", user.Position},
+		{"name", querypoint.Name},
+		{"phone", querypoint.Phone},
+		{"address", querypoint.Address},
+		{"district", querypoint.District},
+		{"department", querypoint.Department},
+		{"responsibles", querypoint.Responsibles},
+		{"actions", querypoint.Actions},
 	}
 
 }

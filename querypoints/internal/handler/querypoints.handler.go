@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	protoqp "github.com/lucasalmeron/microc3/querypoints/internal/proto"
+	protoqp "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
 
 	querypoint "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints"
@@ -29,26 +29,26 @@ func InitEvents(c client.Client) {
 	pubDeleted = micro.NewEvent("go.micro.querypoints.deleted", c)
 }
 
-func buildUserResponse(user querypoint.QueryPoint) *protoqp.ResponseQueryPoint {
+func buildUserResponse(querypoint querypoint.QueryPoint) *protoqp.ResponseQueryPoint {
 	return &protoqp.ResponseQueryPoint{
-		Id:             user.ID,
-		FirstName:      user.FirstName,
-		LastName:       user.LastName,
-		DocumentNumber: user.DocumentNumber,
-		Email:          user.Email,
-		PhoneNumber:    user.PhoneNumber,
-		GDEUser:        user.GDEUser,
-		Position:       user.Position,
-		CreatedAt:      user.CreatedAt,
-		ModifiedAt:     user.ModifiedAt,
-		DeletedAt:      user.DeletedAt,
+		Id:           querypoint.ID,
+		Name:         querypoint.Name,
+		Phone:        querypoint.Phone,
+		Address:      querypoint.Address,
+		District:     querypoint.District,
+		Department:   querypoint.Department,
+		Responsibles: querypoint.Responsibles,
+		Actions:      querypoint.Actions,
+		CreatedAt:    querypoint.CreatedAt,
+		ModifiedAt:   querypoint.ModifiedAt,
+		DeletedAt:    querypoint.DeletedAt,
 	}
 }
 
 type QueryPointsHandler struct{}
 
 func (e *QueryPointsHandler) GetList(ctx context.Context, req *empty.Empty, res *protoqp.ResponseQueryPointsArray) error {
-	log.Info("Received Users.GetUsers request")
+	log.Info("Received QueryPoints.GetList request")
 	reqQueryPoint := new(querypoint.QueryPoint)
 	users, err := reqQueryPoint.GetList()
 	if err != nil {
@@ -67,7 +67,7 @@ func (e *QueryPointsHandler) GetList(ctx context.Context, req *empty.Empty, res 
 }
 
 func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQueryPointID, res *protoqp.ResponseQueryPoint) error {
-	log.Info("Received Users.GetUser request")
+	log.Info("Received QueryPoints.GetByID request")
 	reqQueryPoint := new(querypoint.QueryPoint)
 	foundQueryPoint, err := reqQueryPoint.GetbyID(req.Id)
 	if err != nil {
@@ -77,13 +77,13 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 
 	//RESPONSE+
 	res.Id = foundQueryPoint.ID
-	res.FirstName = foundQueryPoint.FirstName
-	res.LastName = foundQueryPoint.LastName
-	res.DocumentNumber = foundQueryPoint.DocumentNumber
-	res.Email = foundQueryPoint.Email
-	res.PhoneNumber = foundQueryPoint.PhoneNumber
-	res.GDEUser = foundQueryPoint.GDEUser
-	res.Position = foundQueryPoint.Position
+	res.Name = foundQueryPoint.Name
+	res.Phone = foundQueryPoint.Phone
+	res.Address = foundQueryPoint.Address
+	res.District = foundQueryPoint.District
+	res.Department = foundQueryPoint.Department
+	res.Responsibles = foundQueryPoint.Responsibles
+	res.Actions = foundQueryPoint.Actions
 	res.CreatedAt = foundQueryPoint.CreatedAt
 	res.ModifiedAt = foundQueryPoint.ModifiedAt
 	res.DeletedAt = foundQueryPoint.DeletedAt
@@ -92,7 +92,7 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 }
 
 func (e *QueryPointsHandler) GetPaginated(ctx context.Context, req *protoqp.RequestPageOptions, res *protoqp.ResponsePage) error {
-	log.Info("Received Users.GetPaginatedUsers request")
+	log.Info("Received QueryPoint.GetPaginated request")
 	pageOptions := new(user.PageOptions)
 	pageOptions.PageNumber = req.PageNumber
 	pageOptions.RegistersNumber = req.RegistersNumber
@@ -128,43 +128,42 @@ func (e *QueryPointsHandler) GetPaginated(ctx context.Context, req *protoqp.Requ
 }
 
 func (e *QueryPointsHandler) Create(ctx context.Context, req *protoqp.RequestCreateQueryPoint, res *protoqp.ResponseQueryPoint) error {
-	log.Info("Received Users.CreateUser request")
+	log.Info("Received QueryPoint.Create request")
 
-	reqUser := &user.User{
-		FirstName:      req.FirstName,
-		LastName:       req.LastName,
-		DocumentNumber: req.DocumentNumber,
-		Password:       req.Password,
-		Email:          req.Email,
-		PhoneNumber:    req.PhoneNumber,
-		GDEUser:        req.GDEUser,
-		Position:       req.Position,
+	reqQueryPoint := &querypoint.QueryPoint{
+		Name:         req.Name,
+		Phone:        req.Phone,
+		Address:      req.Address,
+		District:     req.District,
+		Department:   req.Department,
+		Responsibles: req.Responsibles,
+		Actions:      req.Actions,
 	}
 
-	err := reqUser.Validate()
+	err := reqQueryPoint.Validate()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	createdUser, err := reqUser.Save()
+	createdQueryPoint, err := reqQueryPoint.Save()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
-	res.Id = createdUser.ID
-	res.FirstName = createdUser.FirstName
-	res.LastName = createdUser.LastName
-	res.DocumentNumber = createdUser.DocumentNumber
-	res.Email = createdUser.Email
-	res.PhoneNumber = createdUser.PhoneNumber
-	res.GDEUser = createdUser.GDEUser
-	res.Position = createdUser.Position
-	res.CreatedAt = createdUser.CreatedAt
-	res.ModifiedAt = createdUser.ModifiedAt
-	res.DeletedAt = createdUser.DeletedAt
+	res.Id = createdQueryPoint.ID
+	res.Name = createdQueryPoint.Name
+	res.Phone = createdQueryPoint.Phone
+	res.Address = createdQueryPoint.Address
+	res.District = createdQueryPoint.District
+	res.Department = createdQueryPoint.Department
+	res.Responsibles = createdQueryPoint.Responsibles
+	res.Actions = createdQueryPoint.Actions
+	res.CreatedAt = createdQueryPoint.CreatedAt
+	res.ModifiedAt = createdQueryPoint.ModifiedAt
+	res.DeletedAt = createdQueryPoint.DeletedAt
 
 	err = pubCreated.Publish(ctx, res)
 	if err != nil {
@@ -175,37 +174,36 @@ func (e *QueryPointsHandler) Create(ctx context.Context, req *protoqp.RequestCre
 }
 
 func (e *QueryPointsHandler) Update(ctx context.Context, req *protoqp.RequestUpdateQueryPoint, res *protoqp.ResponseQueryPoint) error {
-	log.Info("Received Users.UpdateUser request")
-	reqUser := &user.User{
-		ID:             req.Id,
-		FirstName:      req.FirstName,
-		LastName:       req.LastName,
-		DocumentNumber: req.DocumentNumber,
-		Password:       req.Password,
-		Email:          req.Email,
-		PhoneNumber:    req.PhoneNumber,
-		GDEUser:        req.GDEUser,
-		Position:       req.Position,
+	log.Info("Received QueryPoints.Update request")
+	reqQueryPoint := &querypoint.QueryPoint{
+		ID:           req.Id,
+		Name:         req.Name,
+		Phone:        req.Phone,
+		Address:      req.Address,
+		District:     req.District,
+		Department:   req.Department,
+		Responsibles: req.Responsibles,
+		Actions:      req.Actions,
 	}
 
-	updatedUser, err := reqUser.Save()
+	updatedQueryPoint, err := reqQueryPoint.Save()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
-	res.Id = updatedUser.ID
-	res.FirstName = updatedUser.FirstName
-	res.LastName = updatedUser.LastName
-	res.DocumentNumber = updatedUser.DocumentNumber
-	res.Email = updatedUser.Email
-	res.PhoneNumber = updatedUser.PhoneNumber
-	res.GDEUser = updatedUser.GDEUser
-	res.Position = updatedUser.Position
-	res.CreatedAt = updatedUser.CreatedAt
-	res.ModifiedAt = updatedUser.ModifiedAt
-	res.DeletedAt = updatedUser.DeletedAt
+	res.Id = updatedQueryPoint.ID
+	res.Name = updatedQueryPoint.Name
+	res.Phone = updatedQueryPoint.Phone
+	res.Address = updatedQueryPoint.Address
+	res.District = updatedQueryPoint.District
+	res.Department = updatedQueryPoint.Department
+	res.Responsibles = updatedQueryPoint.Responsibles
+	res.Actions = updatedQueryPoint.Actions
+	res.CreatedAt = updatedQueryPoint.CreatedAt
+	res.ModifiedAt = updatedQueryPoint.ModifiedAt
+	res.DeletedAt = updatedQueryPoint.DeletedAt
 
 	err = pubMofidied.Publish(ctx, res)
 	if err != nil {
@@ -216,26 +214,26 @@ func (e *QueryPointsHandler) Update(ctx context.Context, req *protoqp.RequestUpd
 }
 
 func (e *QueryPointsHandler) Delete(ctx context.Context, req *protoqp.RequestQueryPointID, res *protoqp.ResponseQueryPoint) error {
-	log.Info("Received Users.DeleteUser request")
-	reqUser := new(user.User)
-	deletedUser, err := reqUser.Delete(req.Id)
+	log.Info("Received QueryPoint.Delete request")
+	reqQueryPoint := new(querypoint.QueryPoint)
+	deletedQueryPoint, err := reqQueryPoint.Delete(req.Id)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
-	res.Id = deletedUser.ID
-	res.FirstName = deletedUser.FirstName
-	res.LastName = deletedUser.LastName
-	res.DocumentNumber = deletedUser.DocumentNumber
-	res.Email = deletedUser.Email
-	res.PhoneNumber = deletedUser.PhoneNumber
-	res.GDEUser = deletedUser.GDEUser
-	res.Position = deletedUser.Position
-	res.CreatedAt = deletedUser.CreatedAt
-	res.ModifiedAt = deletedUser.ModifiedAt
-	res.DeletedAt = deletedUser.DeletedAt
+	res.Id = deletedQueryPoint.ID
+	res.Name = deletedQueryPoint.Name
+	res.Phone = deletedQueryPoint.Phone
+	res.Address = deletedQueryPoint.Address
+	res.District = deletedQueryPoint.District
+	res.Department = deletedQueryPoint.Department
+	res.Responsibles = deletedQueryPoint.Responsibles
+	res.Actions = deletedQueryPoint.Actions
+	res.CreatedAt = deletedQueryPoint.CreatedAt
+	res.ModifiedAt = deletedQueryPoint.ModifiedAt
+	res.DeletedAt = deletedQueryPoint.DeletedAt
 
 	err = pubDeleted.Publish(ctx, res)
 	if err != nil {

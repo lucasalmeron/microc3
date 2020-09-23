@@ -7,25 +7,15 @@ import (
 )
 
 type QueryPoint struct {
-	ID             string `json:"id" bson:"_id,omitempty"`
-	FirstName      string `json:"firstName" bson:"firstName"`
-	LastName       string `json:"lastName" bson:"lastName"`
-	DocumentNumber string `json:"documentNumber" bson:"documentNumber"`
-	Password       string `json:"password" bson:"password"`
-	Email          string `json:"email" bson:"email"`
-	PhoneNumber    string `json:"phoneNumber" bson:"phoneNumber"`
-	GDEUser        string `json:"GDEUser" bson:"GDEUser"`
-	Position       string `json:"position" bson:"position"`
+	ID         string `json:"id" bson:"_id,omitempty"`
+	Name       string `json:"name" bson:"name"`
+	Phone      string `json:"phone" bson:"phone"`
+	Address    string `json:"address" bson:"address"`
+	District   string `json:"district" bson:"district"`
+	Department string `json:"department" bson:"department"`
 
-	Admin       bool `json:"admin" bson:"admin"`
-	Permissions []struct {
-		Read        bool   `json:"read" bson:"read"`
-		Write       bool   `json:"write" bson:"write"`
-		Responsible bool   `json:"responsible" bson:"responsible"`
-		Query       bool   `json:"query" bson:"query"`
-		Health      bool   `json:"health" bson:"health"`
-		QueryPoint  string `json:"queryPoint" bson:"queryPoint"`
-	} `json:"permissions" bson:"permissions"`
+	Responsibles []string `json:"responsibles" bson:"responsibles"`
+	Actions      []string `json:"actions" bson:"actions"`
 
 	ModifierUser string `json:"modifierUser" bson:"modifierUser"`
 	CreatedAt    int64  `json:"createdAt" bson:"createdAt"`

@@ -5,7 +5,7 @@ import (
 
 	log "github.com/micro/go-micro/v2/logger"
 
-	users "github.com/lucasalmeron/microc3/users/internal/proto"
+	users "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 )
 
 type Users struct{}

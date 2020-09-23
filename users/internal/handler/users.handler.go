@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	protousers "github.com/lucasalmeron/microc3/users/internal/proto"
+	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
 )

@@ -47,13 +47,13 @@ message ResponsePage {
 
 message ResponseQueryPoint {
 	string id = 1;
-	string firstName = 2;
-	string lastName = 3;
-	string documentNumber = 4;
-	string email = 5;
-	string phoneNumber = 6;
-	string GDEUser = 7;
-	string position = 8;
+	string name = 2;
+	string phone = 3;
+	string address = 4;
+	string district = 5;
+	string department = 6;
+	repeated string responsibles = 7;
+	repeated string actions = 8;
 
 	int64 createdAt = 9;
 	int64 modifiedAt = 10;
@@ -61,25 +61,22 @@ message ResponseQueryPoint {
 }
 
 message RequestCreateQueryPoint {
-	string firstName = 1;
-	string lastName = 2;
-	string documentNumber = 3;
-	string password = 4;
-	string repassword = 5;
-	string email = 6;
-	string phoneNumber = 7;
-	string GDEUser = 8;
-	string position = 9;
+	string name = 1;
+	string phone = 2;
+	string address = 3;
+	string district = 4;
+	string department = 5;
+	repeated string responsibles = 6;
+	repeated string actions = 7;
 }
 
 message RequestUpdateQueryPoint {
 	string id = 1;
-	string firstName = 2;
-	string lastName = 3;
-	string documentNumber = 4;
-	string password = 5;
-	string email = 6;
-	string phoneNumber = 7;
-	string GDEUser = 8;
-	string position = 9;
+	string name = 2;
+	string phone = 3;
+	string address = 4;
+	string district = 5;
+	string department = 6;
+	repeated string responsibles = 7;
+	repeated string actions = 8;
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/micro/go-micro/v2"
 	log "github.com/micro/go-micro/v2/logger"
 
-	querypoints "github.com/lucasalmeron/microc3/querypoints/internal/proto"
+	querypoints "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
 )
 
 var (
@@ -57,7 +57,7 @@ func (srv *GRPCServer) registerHandlers() error {
 func (srv *GRPCServer) registerEventSubscribers() error {
 	log.Info("Registering Subscribers")
 	// Register Struct as Subscriber
-	err := micro.RegisterSubscriber("go.micro.auth.test", srv.MicroService.Server(), new(subscriber.QueryPoints))
+	err := micro.RegisterSubscriber("go.micro.users.created", srv.MicroService.Server(), new(subscriber.QueryPoints))
 	if err != nil {
 		return err
 	}

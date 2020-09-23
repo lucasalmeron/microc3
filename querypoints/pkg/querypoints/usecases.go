@@ -2,9 +2,7 @@ package querypoint
 
 import (
 	"context"
-	"errors"
 	"math"
-	"regexp"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
 )
@@ -17,20 +15,6 @@ func SetRepository(repo Repository) {
 
 func (queryPoint *QueryPoint) Validate() error {
 
-	mdoc, err := regexp.MatchString(`^[0-9]{8}$`, queryPoint.DocumentNumber)
-	if err != nil {
-		return err
-	}
-	if !mdoc {
-		return errors.New("Document Number must be a number of 8 digits")
-	}
-	memail, err := regexp.MatchString(`^[\w\.]+@([\w]+\.)+[\w]{2,4}$`, queryPoint.Email)
-	if err != nil {
-		return err
-	}
-	if !memail {
-		return errors.New("Email is invalid")
-	}
 	return nil
 }
 
