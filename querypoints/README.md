@@ -1,4 +1,4 @@
-# Users Service
+# Query Points Service
 
 This is the Query Points service
 
