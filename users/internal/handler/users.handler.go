@@ -67,6 +67,7 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 
 func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
+	fmt.Println(req.Id)
 	reqUser := new(user.User)
 	foundUser, err := reqUser.GetbyID(req.Id)
 	if err != nil {

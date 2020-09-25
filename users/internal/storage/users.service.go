@@ -59,12 +59,14 @@ func (service *UserService) GetByID(ctx context.Context, userID string) (*user.U
 		log.Println(err)
 		return nil, err
 	}
+
 	var user user.User
 	err = service.collection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
-	if err.Error() == "mongo: no documents in result" {
-		return &user, nil
-	}
+
 	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return &user, nil
+		}
 		log.Println(err)
 		return nil, err
 	}
@@ -76,10 +78,11 @@ func (service *UserService) GetByEmail(ctx context.Context, email string) (*user
 
 	var user user.User
 	err := service.collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
-	if err.Error() == "mongo: no documents in result" {
-		return &user, nil
-	}
+
 	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return &user, nil
+		}
 		log.Println(err)
 		return nil, err
 	}
