@@ -4,7 +4,6 @@ MODIFY=Mproto/imports/api.proto=github.com/micro/go-micro/v2/api/proto
 
 .PHONY: build
 build:
-
 	go build -o gateway *.go
 
 .PHONY: test
