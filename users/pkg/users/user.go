@@ -10,6 +10,7 @@ type User struct {
 	LastName       string `json:"lastName" bson:"lastName"`
 	DocumentNumber string `json:"documentNumber" bson:"documentNumber"`
 	Password       string `json:"password" bson:"password"`
+	RePassword     string `json:"repassword"`
 	Email          string `json:"email" bson:"email"`
 	PhoneNumber    string `json:"phoneNumber" bson:"phoneNumber"`
 	GDEUser        string `json:"GDEUser" bson:"GDEUser"`

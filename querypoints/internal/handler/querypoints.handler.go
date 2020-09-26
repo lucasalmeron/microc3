@@ -31,17 +31,16 @@ func InitEvents(c client.Client) {
 
 func buildUserResponse(querypoint querypoint.QueryPoint) *protoqp.ResponseQueryPoint {
 	return &protoqp.ResponseQueryPoint{
-		Id:           querypoint.ID,
-		Name:         querypoint.Name,
-		Phone:        querypoint.Phone,
-		Address:      querypoint.Address,
-		District:     querypoint.District,
-		Department:   querypoint.Department,
-		Responsibles: querypoint.Responsibles,
-		Actions:      querypoint.Actions,
-		CreatedAt:    querypoint.CreatedAt,
-		ModifiedAt:   querypoint.ModifiedAt,
-		DeletedAt:    querypoint.DeletedAt,
+		Id:         querypoint.ID,
+		Name:       querypoint.Name,
+		Phone:      querypoint.Phone,
+		Address:    querypoint.Address,
+		District:   querypoint.District,
+		Department: querypoint.Department,
+		Actions:    querypoint.Actions,
+		CreatedAt:  querypoint.CreatedAt,
+		ModifiedAt: querypoint.ModifiedAt,
+		DeletedAt:  querypoint.DeletedAt,
 	}
 }
 
@@ -82,7 +81,6 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 	res.Address = foundQueryPoint.Address
 	res.District = foundQueryPoint.District
 	res.Department = foundQueryPoint.Department
-	res.Responsibles = foundQueryPoint.Responsibles
 	res.Actions = foundQueryPoint.Actions
 	res.CreatedAt = foundQueryPoint.CreatedAt
 	res.ModifiedAt = foundQueryPoint.ModifiedAt
@@ -131,13 +129,12 @@ func (e *QueryPointsHandler) Create(ctx context.Context, req *protoqp.RequestCre
 	log.Info("Received QueryPoint.Create request")
 
 	reqQueryPoint := &querypoint.QueryPoint{
-		Name:         req.Name,
-		Phone:        req.Phone,
-		Address:      req.Address,
-		District:     req.District,
-		Department:   req.Department,
-		Responsibles: req.Responsibles,
-		Actions:      req.Actions,
+		Name:       req.Name,
+		Phone:      req.Phone,
+		Address:    req.Address,
+		District:   req.District,
+		Department: req.Department,
+		Actions:    req.Actions,
 	}
 
 	err := reqQueryPoint.Validate()
@@ -159,7 +156,6 @@ func (e *QueryPointsHandler) Create(ctx context.Context, req *protoqp.RequestCre
 	res.Address = createdQueryPoint.Address
 	res.District = createdQueryPoint.District
 	res.Department = createdQueryPoint.Department
-	res.Responsibles = createdQueryPoint.Responsibles
 	res.Actions = createdQueryPoint.Actions
 	res.CreatedAt = createdQueryPoint.CreatedAt
 	res.ModifiedAt = createdQueryPoint.ModifiedAt
@@ -176,14 +172,13 @@ func (e *QueryPointsHandler) Create(ctx context.Context, req *protoqp.RequestCre
 func (e *QueryPointsHandler) Update(ctx context.Context, req *protoqp.RequestUpdateQueryPoint, res *protoqp.ResponseQueryPoint) error {
 	log.Info("Received QueryPoints.Update request")
 	reqQueryPoint := &querypoint.QueryPoint{
-		ID:           req.Id,
-		Name:         req.Name,
-		Phone:        req.Phone,
-		Address:      req.Address,
-		District:     req.District,
-		Department:   req.Department,
-		Responsibles: req.Responsibles,
-		Actions:      req.Actions,
+		ID:         req.Id,
+		Name:       req.Name,
+		Phone:      req.Phone,
+		Address:    req.Address,
+		District:   req.District,
+		Department: req.Department,
+		Actions:    req.Actions,
 	}
 
 	updatedQueryPoint, err := reqQueryPoint.Save()
@@ -199,7 +194,6 @@ func (e *QueryPointsHandler) Update(ctx context.Context, req *protoqp.RequestUpd
 	res.Address = updatedQueryPoint.Address
 	res.District = updatedQueryPoint.District
 	res.Department = updatedQueryPoint.Department
-	res.Responsibles = updatedQueryPoint.Responsibles
 	res.Actions = updatedQueryPoint.Actions
 	res.CreatedAt = updatedQueryPoint.CreatedAt
 	res.ModifiedAt = updatedQueryPoint.ModifiedAt
@@ -229,7 +223,6 @@ func (e *QueryPointsHandler) Delete(ctx context.Context, req *protoqp.RequestQue
 	res.Address = deletedQueryPoint.Address
 	res.District = deletedQueryPoint.District
 	res.Department = deletedQueryPoint.Department
-	res.Responsibles = deletedQueryPoint.Responsibles
 	res.Actions = deletedQueryPoint.Actions
 	res.CreatedAt = deletedQueryPoint.CreatedAt
 	res.ModifiedAt = deletedQueryPoint.ModifiedAt

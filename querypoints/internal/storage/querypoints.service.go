@@ -61,10 +61,11 @@ func (service *QueryPointService) GetByID(ctx context.Context, queryPointID stri
 	}
 	var queryPoint querypoint.QueryPoint
 	err = service.collection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&queryPoint)
-	if err.Error() == "mongo: no documents in result" {
-		return &queryPoint, nil
-	}
+
 	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return &queryPoint, nil
+		}
 		log.Println(err)
 		return nil, err
 	}

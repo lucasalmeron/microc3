@@ -52,12 +52,11 @@ message ResponseQueryPoint {
 	string address = 4;
 	string district = 5;
 	string department = 6;
-	repeated string responsibles = 7;
-	repeated string actions = 8;
+	repeated string actions = 7;
 
-	int64 createdAt = 9;
-	int64 modifiedAt = 10;
-	int64 deletedAt = 11;
+	int64 createdAt = 8;
+	int64 modifiedAt = 9;
+	int64 deletedAt = 10;
 }
 
 message RequestCreateQueryPoint {
@@ -66,8 +65,7 @@ message RequestCreateQueryPoint {
 	string address = 3;
 	string district = 4;
 	string department = 5;
-	repeated string responsibles = 6;
-	repeated string actions = 7;
+	repeated string actions = 6;
 }
 
 message RequestUpdateQueryPoint {
@@ -77,6 +75,5 @@ message RequestUpdateQueryPoint {
 	string address = 4;
 	string district = 5;
 	string department = 6;
-	repeated string responsibles = 7;
-	repeated string actions = 8;
+	repeated string actions = 7;
 }

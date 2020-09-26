@@ -67,6 +67,7 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 
 func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
+	fmt.Println(req.Id)
 	reqUser := new(user.User)
 	foundUser, err := reqUser.GetbyID(req.Id)
 	if err != nil {
@@ -153,6 +154,7 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 
 func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCreateUser, res *protousers.ResponseUser) error {
 	log.Info("Received Users.CreateUser request")
+	fmt.Println(req)
 	if req.Password != req.Repassword {
 		return status.Error(codes.InvalidArgument, "Passwords do not match")
 	}
