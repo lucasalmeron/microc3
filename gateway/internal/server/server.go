@@ -18,6 +18,7 @@ func (srv *Server) Init() {
 
 	srv.router = mux.NewRouter().StrictSlash(true)
 	apiPath := srv.router.PathPrefix("/api")
+	srv.router.Use(httphandler.Middleware)
 
 	// Only matches if domain is "www.example.com".
 	//router.Host("www.example.com")

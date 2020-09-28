@@ -13,16 +13,13 @@ import (
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
+
+	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
 )
 
 var (
 	userClient protousers.UsersService
 )
-
-type httpError struct {
-	Status  int    `json:"status"`
-	Message string `json:"message"`
-}
 
 type UsersHandler struct{}
 
@@ -47,10 +44,9 @@ func (h UsersHandler) GetList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&httpError{http.StatusInternalServerError, err.Error()})
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
-	log.Print(response)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -63,10 +59,9 @@ func (h UsersHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&httpError{http.StatusInternalServerError, err.Error()})
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
-	log.Print(response)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -79,10 +74,9 @@ func (h UsersHandler) GetByEmail(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&httpError{http.StatusInternalServerError, err.Error()})
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
-	log.Print(response)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -94,7 +88,7 @@ func (h UsersHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err := decoder.Decode(&user); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&httpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
 		return
 	}
 
@@ -103,7 +97,7 @@ func (h UsersHandler) Create(w http.ResponseWriter, r *http.Request) {
 		LastName:       user.LastName,
 		DocumentNumber: user.DocumentNumber,
 		Password:       user.Password,
-		Repassword:     user.Repassword,
+		Repassword:     user.RePassword,
 		Email:          user.Email,
 		PhoneNumber:    user.PhoneNumber,
 		GDEUser:        user.GDEUser,
@@ -112,16 +106,42 @@ func (h UsersHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(&httpError{http.StatusInternalServerError, err.Error()})
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
-	log.Print(response)
 
 	json.NewEncoder(w).Encode(response)
 }
 
 func (h UsersHandler) Update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
 
-	json.NewEncoder(w).Encode("update")
+	var user user.User
+
+	if err := decoder.Decode(&user); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := userClient.UpdateUser(context.TODO(), &protousers.RequestUpdateUser{
+		Id:             user.ID,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		DocumentNumber: user.DocumentNumber,
+		Password:       user.Password,
+		Email:          user.Email,
+		PhoneNumber:    user.PhoneNumber,
+		GDEUser:        user.GDEUser,
+		Position:       user.Position,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
