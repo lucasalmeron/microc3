@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/micro/go-micro/v2/client"
 
+	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
@@ -24,8 +25,10 @@ var (
 type UsersHandler struct{}
 
 func InitUserHandler(router *mux.Router) {
-
+	//create gRPC clients//
 	userClient = protousers.NewUsersService("go.micro.service.users", client.DefaultClient)
+	authClient = protoauth.NewAuthService("go.micro.service.auth", client.DefaultClient)
+
 	handler := new(UsersHandler)
 
 	router.Path("/users/list").HandlerFunc(handler.GetList).Methods(http.MethodGet, http.MethodOptions)

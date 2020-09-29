@@ -24,13 +24,7 @@ func NewAuthService(db *mongo.Database) auth.Repository {
 
 func (service *AuthService) buildBsonObject(auth auth.Auth) bson.D {
 	return bson.D{
-		{"name", auth.Name},
-		{"phone", auth.Phone},
-		{"address", auth.Address},
-		{"district", auth.District},
-		{"department", auth.Department},
-		{"responsibles", auth.Responsibles},
-		{"actions", auth.Actions},
+		{"user", auth.User},
 	}
 
 }

@@ -46,7 +46,7 @@ func (srv *GRPCServer) registerHandlers() error {
 	handler.InitEvents(srv.MicroService.Client())
 	// Register Handler
 
-	err := auth.RegisterAuthHandler(srv.MicroService.Server(), new(handler.AuthsHandler))
+	err := auth.RegisterAuthHandler(srv.MicroService.Server(), new(handler.AuthHandler))
 	if err != nil {
 		return err
 	}

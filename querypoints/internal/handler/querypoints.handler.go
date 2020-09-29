@@ -49,14 +49,14 @@ type QueryPointsHandler struct{}
 func (e *QueryPointsHandler) GetList(ctx context.Context, req *empty.Empty, res *protoqp.ResponseQueryPointsArray) error {
 	log.Info("Received QueryPoints.GetList request")
 	reqQueryPoint := new(querypoint.QueryPoint)
-	users, err := reqQueryPoint.GetList()
+	queryPoints, err := reqQueryPoint.GetList()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	var response []*protoqp.ResponseQueryPoint
-	for _, u := range users {
+	for _, u := range queryPoints {
 		response = append(response, buildUserResponse(u))
 	}
 

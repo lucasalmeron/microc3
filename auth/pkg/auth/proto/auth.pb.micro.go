@@ -6,7 +6,6 @@ package go_micro_service_auth
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	math "math"
 )
 
@@ -43,12 +42,12 @@ func NewAuthEndpoints() []*api.Endpoint {
 // Client API for Auth service
 
 type AuthService interface {
-	GetPaginated(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error)
-	GetList(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseQueryPointsArray, error)
-	GetByID(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error)
-	Create(ctx context.Context, in *RequestCreateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error)
-	Update(ctx context.Context, in *RequestUpdateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error)
-	Delete(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error)
+	LogIn(ctx context.Context, in *RequestAuthLogIn, opts ...client.CallOption) (*ResponseLogIn, error)
+	AuthPath(ctx context.Context, in *RequestAuthPath, opts ...client.CallOption) (*ResponseAuthPath, error)
+	GetByID(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
+	Create(ctx context.Context, in *RequestCreateAuth, opts ...client.CallOption) (*ResponseAuth, error)
+	Update(ctx context.Context, in *RequestUpdateAuth, opts ...client.CallOption) (*ResponseAuth, error)
+	Delete(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
 }
 
 type authService struct {
@@ -63,9 +62,9 @@ func NewAuthService(name string, c client.Client) AuthService {
 	}
 }
 
-func (c *authService) GetPaginated(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error) {
-	req := c.c.NewRequest(c.name, "Auth.GetPaginated", in)
-	out := new(ResponsePage)
+func (c *authService) LogIn(ctx context.Context, in *RequestAuthLogIn, opts ...client.CallOption) (*ResponseLogIn, error) {
+	req := c.c.NewRequest(c.name, "Auth.LogIn", in)
+	out := new(ResponseLogIn)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -73,9 +72,9 @@ func (c *authService) GetPaginated(ctx context.Context, in *RequestPageOptions, 
 	return out, nil
 }
 
-func (c *authService) GetList(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseQueryPointsArray, error) {
-	req := c.c.NewRequest(c.name, "Auth.GetList", in)
-	out := new(ResponseQueryPointsArray)
+func (c *authService) AuthPath(ctx context.Context, in *RequestAuthPath, opts ...client.CallOption) (*ResponseAuthPath, error) {
+	req := c.c.NewRequest(c.name, "Auth.AuthPath", in)
+	out := new(ResponseAuthPath)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -83,9 +82,9 @@ func (c *authService) GetList(ctx context.Context, in *empty.Empty, opts ...clie
 	return out, nil
 }
 
-func (c *authService) GetByID(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error) {
+func (c *authService) GetByID(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.GetByID", in)
-	out := new(ResponseQueryPoint)
+	out := new(ResponseAuth)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,9 +92,9 @@ func (c *authService) GetByID(ctx context.Context, in *RequestQueryPointID, opts
 	return out, nil
 }
 
-func (c *authService) Create(ctx context.Context, in *RequestCreateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error) {
+func (c *authService) Create(ctx context.Context, in *RequestCreateAuth, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.Create", in)
-	out := new(ResponseQueryPoint)
+	out := new(ResponseAuth)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -103,9 +102,9 @@ func (c *authService) Create(ctx context.Context, in *RequestCreateQueryPoint, o
 	return out, nil
 }
 
-func (c *authService) Update(ctx context.Context, in *RequestUpdateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error) {
+func (c *authService) Update(ctx context.Context, in *RequestUpdateAuth, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.Update", in)
-	out := new(ResponseQueryPoint)
+	out := new(ResponseAuth)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -113,9 +112,9 @@ func (c *authService) Update(ctx context.Context, in *RequestUpdateQueryPoint, o
 	return out, nil
 }
 
-func (c *authService) Delete(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error) {
+func (c *authService) Delete(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.Delete", in)
-	out := new(ResponseQueryPoint)
+	out := new(ResponseAuth)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -126,22 +125,22 @@ func (c *authService) Delete(ctx context.Context, in *RequestQueryPointID, opts 
 // Server API for Auth service
 
 type AuthHandler interface {
-	GetPaginated(context.Context, *RequestPageOptions, *ResponsePage) error
-	GetList(context.Context, *empty.Empty, *ResponseQueryPointsArray) error
-	GetByID(context.Context, *RequestQueryPointID, *ResponseQueryPoint) error
-	Create(context.Context, *RequestCreateQueryPoint, *ResponseQueryPoint) error
-	Update(context.Context, *RequestUpdateQueryPoint, *ResponseQueryPoint) error
-	Delete(context.Context, *RequestQueryPointID, *ResponseQueryPoint) error
+	LogIn(context.Context, *RequestAuthLogIn, *ResponseLogIn) error
+	AuthPath(context.Context, *RequestAuthPath, *ResponseAuthPath) error
+	GetByID(context.Context, *RequestAuthID, *ResponseAuth) error
+	Create(context.Context, *RequestCreateAuth, *ResponseAuth) error
+	Update(context.Context, *RequestUpdateAuth, *ResponseAuth) error
+	Delete(context.Context, *RequestAuthID, *ResponseAuth) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
 	type auth interface {
-		GetPaginated(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error
-		GetList(ctx context.Context, in *empty.Empty, out *ResponseQueryPointsArray) error
-		GetByID(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error
-		Create(ctx context.Context, in *RequestCreateQueryPoint, out *ResponseQueryPoint) error
-		Update(ctx context.Context, in *RequestUpdateQueryPoint, out *ResponseQueryPoint) error
-		Delete(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error
+		LogIn(ctx context.Context, in *RequestAuthLogIn, out *ResponseLogIn) error
+		AuthPath(ctx context.Context, in *RequestAuthPath, out *ResponseAuthPath) error
+		GetByID(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
+		Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error
+		Update(ctx context.Context, in *RequestUpdateAuth, out *ResponseAuth) error
+		Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
 	}
 	type Auth struct {
 		auth
@@ -154,26 +153,26 @@ type authHandler struct {
 	AuthHandler
 }
 
-func (h *authHandler) GetPaginated(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error {
-	return h.AuthHandler.GetPaginated(ctx, in, out)
+func (h *authHandler) LogIn(ctx context.Context, in *RequestAuthLogIn, out *ResponseLogIn) error {
+	return h.AuthHandler.LogIn(ctx, in, out)
 }
 
-func (h *authHandler) GetList(ctx context.Context, in *empty.Empty, out *ResponseQueryPointsArray) error {
-	return h.AuthHandler.GetList(ctx, in, out)
+func (h *authHandler) AuthPath(ctx context.Context, in *RequestAuthPath, out *ResponseAuthPath) error {
+	return h.AuthHandler.AuthPath(ctx, in, out)
 }
 
-func (h *authHandler) GetByID(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error {
+func (h *authHandler) GetByID(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error {
 	return h.AuthHandler.GetByID(ctx, in, out)
 }
 
-func (h *authHandler) Create(ctx context.Context, in *RequestCreateQueryPoint, out *ResponseQueryPoint) error {
+func (h *authHandler) Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error {
 	return h.AuthHandler.Create(ctx, in, out)
 }
 
-func (h *authHandler) Update(ctx context.Context, in *RequestUpdateQueryPoint, out *ResponseQueryPoint) error {
+func (h *authHandler) Update(ctx context.Context, in *RequestUpdateAuth, out *ResponseAuth) error {
 	return h.AuthHandler.Update(ctx, in, out)
 }
 
-func (h *authHandler) Delete(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error {
+func (h *authHandler) Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error {
 	return h.AuthHandler.Delete(ctx, in, out)
 }

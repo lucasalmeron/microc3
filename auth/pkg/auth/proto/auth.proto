@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 
 package go.micro.service.auth;
 
 service Auth {
-	rpc GetList(google.protobuf.Empty) returns (ResponseAuthArray) {}
+	rpc LogIn(RequestAuthLogIn) returns (ResponseLogIn) {}
+	rpc AuthPath(RequestAuthPath) returns (ResponseAuthPath) {}
 	rpc GetByID(RequestAuthID) returns (ResponseAuth) {}
 	rpc Create(RequestCreateAuth) returns (ResponseAuth) {}
 	rpc Update(RequestUpdateAuth) returns (ResponseAuth) {}
@@ -14,10 +14,6 @@ service Auth {
 
 message RequestAuthID {
 	string id = 1;
-}
-
-message ResponseAuthArray {
-    repeated ResponseAuth Auths = 1;
 }
 
 message ResponseAuth {
@@ -32,6 +28,25 @@ message ResponseAuth {
 	int64 createdAt = 8;
 	int64 modifiedAt = 9;
 	int64 deletedAt = 10;
+}
+
+message RequestAuthLogIn {
+	string email = 1;
+	string password = 2;
+}
+
+message ResponseLogIn {
+	string token = 1;
+}
+
+message RequestAuthPath {
+	string token = 1;
+	string path = 2;
+	string method = 3;
+}
+
+message ResponseAuthPath {
+	bool authorized = 1;
 }
 
 message RequestCreateAuth {
