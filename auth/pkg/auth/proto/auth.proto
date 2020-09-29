@@ -41,8 +41,9 @@ message ResponseLogIn {
 
 message RequestAuthPath {
 	string token = 1;
-	string path = 2;
-	string method = 3;
+	string host = 2;
+	string path = 3;
+	string method = 4;
 }
 
 message ResponseAuthPath {

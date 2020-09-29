@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/client"
@@ -46,7 +47,8 @@ func (e *AuthHandler) LogIn(ctx context.Context, req *protoauth.RequestAuthLogIn
 
 func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPath, res *protoauth.ResponseAuthPath) error {
 	log.Info("Received auth.AuthPath request")
-
+	fmt.Println(req)
+	res.Authorized = true
 	return nil
 }
 
