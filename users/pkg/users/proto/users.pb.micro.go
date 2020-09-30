@@ -47,6 +47,7 @@ type UsersService interface {
 	GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error)
 	GetUserByID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
 	GetUserByEmail(ctx context.Context, in *RequestUserEmail, opts ...client.CallOption) (*ResponseUser, error)
+	LogIn(ctx context.Context, in *RequestUserLogIn, opts ...client.CallOption) (*ResponseUser, error)
 	CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error)
 	UpdateUser(ctx context.Context, in *RequestUpdateUser, opts ...client.CallOption) (*ResponseUser, error)
 	DeleteUser(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
@@ -104,6 +105,16 @@ func (c *usersService) GetUserByEmail(ctx context.Context, in *RequestUserEmail,
 	return out, nil
 }
 
+func (c *usersService) LogIn(ctx context.Context, in *RequestUserLogIn, opts ...client.CallOption) (*ResponseUser, error) {
+	req := c.c.NewRequest(c.name, "Users.LogIn", in)
+	out := new(ResponseUser)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *usersService) CreateUser(ctx context.Context, in *RequestCreateUser, opts ...client.CallOption) (*ResponseUser, error) {
 	req := c.c.NewRequest(c.name, "Users.CreateUser", in)
 	out := new(ResponseUser)
@@ -141,6 +152,7 @@ type UsersHandler interface {
 	GetUsers(context.Context, *empty.Empty, *ResponseUsersArray) error
 	GetUserByID(context.Context, *RequestUserID, *ResponseUser) error
 	GetUserByEmail(context.Context, *RequestUserEmail, *ResponseUser) error
+	LogIn(context.Context, *RequestUserLogIn, *ResponseUser) error
 	CreateUser(context.Context, *RequestCreateUser, *ResponseUser) error
 	UpdateUser(context.Context, *RequestUpdateUser, *ResponseUser) error
 	DeleteUser(context.Context, *RequestUserID, *ResponseUser) error
@@ -152,6 +164,7 @@ func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.Han
 		GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error
 		GetUserByID(ctx context.Context, in *RequestUserID, out *ResponseUser) error
 		GetUserByEmail(ctx context.Context, in *RequestUserEmail, out *ResponseUser) error
+		LogIn(ctx context.Context, in *RequestUserLogIn, out *ResponseUser) error
 		CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error
 		UpdateUser(ctx context.Context, in *RequestUpdateUser, out *ResponseUser) error
 		DeleteUser(ctx context.Context, in *RequestUserID, out *ResponseUser) error
@@ -181,6 +194,10 @@ func (h *usersHandler) GetUserByID(ctx context.Context, in *RequestUserID, out *
 
 func (h *usersHandler) GetUserByEmail(ctx context.Context, in *RequestUserEmail, out *ResponseUser) error {
 	return h.UsersHandler.GetUserByEmail(ctx, in, out)
+}
+
+func (h *usersHandler) LogIn(ctx context.Context, in *RequestUserLogIn, out *ResponseUser) error {
+	return h.UsersHandler.LogIn(ctx, in, out)
 }
 
 func (h *usersHandler) CreateUser(ctx context.Context, in *RequestCreateUser, out *ResponseUser) error {

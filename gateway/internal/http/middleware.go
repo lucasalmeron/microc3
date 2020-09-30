@@ -10,10 +10,6 @@ import (
 	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
 )
 
-var (
-	authClient protoauth.AuthService
-)
-
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

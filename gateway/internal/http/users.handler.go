@@ -19,6 +19,7 @@ import (
 )
 
 var (
+	authClient protoauth.AuthService
 	userClient protousers.UsersService
 )
 
@@ -35,6 +36,7 @@ func InitUserHandler(router *mux.Router) {
 	router.Path("/users/id/{userID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetByID).Methods(http.MethodGet, http.MethodOptions)
 	router.Path("/users/email/{email}").HandlerFunc(handler.GetByEmail).Methods(http.MethodGet, http.MethodOptions)
 
+	router.Path("/users/login").HandlerFunc(handler.LogIn).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
 
@@ -80,6 +82,35 @@ func (h UsersHandler) GetByEmail(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) LogIn(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	logInReq := struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
+
+	if err := decoder.Decode(&logInReq); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := authClient.LogIn(context.TODO(), &protoauth.RequestAuthLogIn{
+		Email:    logInReq.Email,
+		Password: logInReq.Password,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
 	json.NewEncoder(w).Encode(response)
 }
 

@@ -9,6 +9,7 @@ service Users {
 	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}
 	rpc GetUserByID(RequestUserID) returns (ResponseUser) {}
 	rpc GetUserByEmail(RequestUserEmail) returns (ResponseUser) {}
+	rpc LogIn(RequestUserLogIn) returns (ResponseUser) {}
 	rpc CreateUser(RequestCreateUser) returns (ResponseUser) {}
 	rpc UpdateUser(RequestUpdateUser) returns (ResponseUser) {}
 	rpc DeleteUser(RequestUserID) returns (ResponseUser) {}
@@ -16,6 +17,11 @@ service Users {
 
 message Message {
 	string say = 1;
+}
+
+message RequestUserLogIn {
+	string email = 1;
+	string password = 2;
 }
 
 message RequestUserID {

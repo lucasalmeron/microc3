@@ -3,7 +3,10 @@ package handler
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/url"
 
+	"github.com/gorilla/mux"
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/client"
 	log "github.com/micro/go-micro/v2/logger"
@@ -11,7 +14,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
+	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
+	authroutes "github.com/lucasalmeron/microc3/auth/internal/routes"
 	auth "github.com/lucasalmeron/microc3/auth/pkg/auth"
 )
 
@@ -19,12 +24,15 @@ var (
 	pubCreated  micro.Event
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
+	userClient  protousers.UsersService
 )
 
 func InitEvents(c client.Client) {
 	pubCreated = micro.NewEvent("go.micro.auth.created", c)
 	pubMofidied = micro.NewEvent("go.micro.auth.modified", c)
 	pubDeleted = micro.NewEvent("go.micro.auth.deleted", c)
+	//create gRPC clients//
+	userClient = protousers.NewUsersService("go.micro.service.users", client.DefaultClient)
 }
 
 func buildUserResponse(auth auth.Auth) *protoauth.ResponseAuth {
@@ -47,9 +55,24 @@ func (e *AuthHandler) LogIn(ctx context.Context, req *protoauth.RequestAuthLogIn
 
 func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPath, res *protoauth.ResponseAuthPath) error {
 	log.Info("Received auth.AuthPath request")
-	fmt.Println(req)
-	res.Authorized = true
-	return nil
+	request := &http.Request{
+		Method: req.Method,
+		URL:    &url.URL{Path: req.Path},
+	}
+
+	for _, r := range authroutes.Routes {
+		muxrouter := mux.NewRouter()
+		muxrouter.NewRoute().Path(r.Path).Methods(r.Method)
+
+		if muxrouter.Match(request, &mux.RouteMatch{}) {
+			fmt.Println("MATCH ROUTE")
+			fmt.Println(r)
+			//check permisos
+			res.Authorized = true
+			return nil
+		}
+	}
+	return status.Error(codes.NotFound, "Path doesn't exist")
 }
 
 func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID, res *protoauth.ResponseAuth) error {

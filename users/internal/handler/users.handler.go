@@ -152,6 +152,36 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 	return nil
 }
 
+func (e *UsersHandler) LogIn(ctx context.Context, req *protousers.RequestUserLogIn, res *protousers.ResponseUser) error {
+	log.Info("Received Users.LogIn request")
+	reqUser := new(user.User)
+	foundUser, err := reqUser.GetbyEmail(req.Email)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+	if foundUser.ID == "" {
+		return status.Error(codes.NotFound, "User doesn't exist")
+	}
+	if !foundUser.ComparePasswords(req.Password) {
+		return status.Error(codes.InvalidArgument, "User doesn't match")
+	}
+
+	//RESPONSE+
+	res.Id = foundUser.ID
+	res.FirstName = foundUser.FirstName
+	res.LastName = foundUser.LastName
+	res.DocumentNumber = foundUser.DocumentNumber
+	res.Email = foundUser.Email
+	res.PhoneNumber = foundUser.PhoneNumber
+	res.GDEUser = foundUser.GDEUser
+	res.Position = foundUser.Position
+	res.CreatedAt = foundUser.CreatedAt
+	res.ModifiedAt = foundUser.ModifiedAt
+	res.DeletedAt = foundUser.DeletedAt
+	return nil
+}
+
 func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCreateUser, res *protousers.ResponseUser) error {
 	log.Info("Received Users.CreateUser request")
 	if req.Password != req.Repassword {
@@ -168,8 +198,6 @@ func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCr
 		GDEUser:        req.GDEUser,
 		Position:       req.Position,
 	}
-
-	fmt.Println(reqUser)
 
 	err := reqUser.Validate()
 	if err != nil {

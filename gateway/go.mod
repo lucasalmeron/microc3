@@ -9,7 +9,7 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 require (
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.3
-	github.com/lucasalmeron/microc3/auth v0.0.0-20200929003833-e08dcdc0394b
+	github.com/lucasalmeron/microc3/auth v0.0.0-20200929182354-b61502e5f9f4
 	github.com/lucasalmeron/microc3/users v0.0.0-20200929003833-e08dcdc0394b
 	github.com/micro/go-micro/v2 v2.9.1
 )
