@@ -7,28 +7,15 @@ service Auth {
 	rpc LogIn(RequestAuthLogIn) returns (ResponseLogIn) {}
 	rpc AuthPath(RequestAuthPath) returns (ResponseAuthPath) {}
 	rpc GetByID(RequestAuthID) returns (ResponseAuth) {}
+	rpc GetByUserID(RequestUserID) returns (ResponseAuth) {}
 	rpc Create(RequestCreateAuth) returns (ResponseAuth) {}
 	rpc Update(RequestUpdateAuth) returns (ResponseAuth) {}
 	rpc Delete(RequestAuthID) returns (ResponseAuth) {}
+	rpc PushPermission(RequestPushPermission) returns (ResponseAuth) {}
+	rpc DeletePermission(RequestDeletePermission) returns (ResponseAuth) {}
 }
 
-message RequestAuthID {
-	string id = 1;
-}
 
-message ResponseAuth {
-	string id = 1;
-	string name = 2;
-	string phone = 3;
-	string address = 4;
-	string district = 5;
-	string department = 6;
-	repeated string actions = 7;
-
-	int64 createdAt = 8;
-	int64 modifiedAt = 9;
-	int64 deletedAt = 10;
-}
 
 message RequestAuthLogIn {
 	string email = 1;
@@ -50,21 +37,53 @@ message ResponseAuthPath {
 	bool authorized = 1;
 }
 
+
+message RequestAuthID {
+	string id = 1;
+}
+
+message RequestUserID {
+	string user = 1;
+}
+
+message Permission {
+	string id = 1;
+	bool read = 2;
+	bool write = 3;
+	bool responsible = 4;
+	bool query = 5;
+	bool health = 6;
+	string queryPoint = 7;
+}
+
+message ResponseAuth {
+	string id = 1;
+	string user = 2;
+	string admin = 3;
+	repeated Permission permissions = 4;
+
+	int64 createdAt = 5;
+	int64 modifiedAt = 6;
+	int64 deletedAt = 7;
+}
+
 message RequestCreateAuth {
-	string name = 1;
-	string phone = 2;
-	string address = 3;
-	string district = 4;
-	string department = 5;
-	repeated string actions = 6;
+	string user = 1;
+	repeated Permission permissions = 2;
 }
 
 message RequestUpdateAuth {
 	string id = 1;
-	string name = 2;
-	string phone = 3;
-	string address = 4;
-	string district = 5;
-	string department = 6;
-	repeated string actions = 7;
+	string user = 2;
+	repeated Permission permissions = 3;
+}
+
+message RequestPushPermission {
+	string userID = 1;
+	Permission permission = 2;
+}
+
+message RequestDeletePermission {
+	string userID = 1;
+	string permissionID = 2;
 }

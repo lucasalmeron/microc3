@@ -2,10 +2,14 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/micro/go-micro/v2"
 	"github.com/micro/go-micro/v2/client"
@@ -25,6 +29,7 @@ var (
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
 	userClient  protousers.UsersService
+	tokenSecret = "565985%$#fjgSAS"
 )
 
 func InitEvents(c client.Client) {
@@ -35,20 +40,75 @@ func InitEvents(c client.Client) {
 	userClient = protousers.NewUsersService("go.micro.service.users", client.DefaultClient)
 }
 
-func buildUserResponse(auth auth.Auth) *protoauth.ResponseAuth {
-	return &protoauth.ResponseAuth{
-		Id: auth.ID,
+func buildProtoPermission(auth auth.Auth) []*protoauth.Permission {
+	permissions := make([]*protoauth.Permission, 0)
 
-		CreatedAt:  auth.CreatedAt,
-		ModifiedAt: auth.ModifiedAt,
-		DeletedAt:  auth.DeletedAt,
+	for _, p := range auth.Permissions {
+		permissions = append(permissions, &protoauth.Permission{
+			Id:          p.ID,
+			Read:        p.Read,
+			Write:       p.Write,
+			Responsible: p.Responsible,
+			Query:       p.Query,
+			Health:      p.Health,
+			QueryPoint:  p.QueryPoint,
+		})
 	}
+
+	return permissions
+
+	/*return &protoauth.ResponseAuth{
+		Id:          auth.ID,
+		User:        auth.User,
+		Permissions: permissions,
+		CreatedAt:   auth.CreatedAt,
+		ModifiedAt:  auth.ModifiedAt,
+		DeletedAt:   auth.DeletedAt,
+	}*/
 }
 
 type AuthHandler struct{}
 
 func (e *AuthHandler) LogIn(ctx context.Context, req *protoauth.RequestAuthLogIn, res *protoauth.ResponseLogIn) error {
 	log.Info("Received auth.LogIn request")
+
+	respUser, err := userClient.LogIn(context.TODO(), &protousers.RequestUserLogIn{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	userAuth := &auth.Auth{
+		User: respUser.Id,
+	}
+	userPermissions, err := userAuth.GetByUserID(userAuth.User)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	// REMEMBER TO ADD QUERYPOINT//
+
+	signedTime := time.Now()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":          respUser.Id,
+		"name":        respUser.FirstName + " " + respUser.LastName,
+		"email":       respUser.Email,
+		"admin":       userPermissions.Admin,
+		"permissions": userPermissions.Permissions,
+		"iat":         signedTime.Unix(),
+		"exp":         signedTime.Add(8 * time.Hour).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte(tokenSecret))
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+	//RESPONSE
+	res.Token = tokenString
 
 	return nil
 }
@@ -67,7 +127,54 @@ func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPa
 		if muxrouter.Match(request, &mux.RouteMatch{}) {
 			fmt.Println("MATCH ROUTE")
 			fmt.Println(r)
-			//check permisos
+			if len(r.Permissions) > 0 { //if the route require permissions
+				if req.Token == "" {
+					res.Authorized = false
+					return nil
+				}
+				splitedToken := strings.Split(req.Token, " ")
+				if splitedToken[0] != "Bearer" {
+					log.Error("Invalid Token format")
+					return status.Error(codes.PermissionDenied, "Invalid Token format")
+				}
+				token, err := jwt.Parse(splitedToken[1], func(token *jwt.Token) (interface{}, error) {
+					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+						return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+					}
+					return []byte(tokenSecret), nil
+				})
+				if err != nil {
+					log.Error(err)
+					return status.Error(codes.PermissionDenied, err.Error())
+				}
+				if !token.Valid {
+					log.Error("Invalid Token")
+					return status.Error(codes.PermissionDenied, "Invalid Token")
+				}
+				//IF ADMIN IS AUTHORIZED
+				if token.Claims.(jwt.MapClaims)["admin"] == true {
+					res.Authorized = true
+					return nil
+				}
+				///////////UNMARSHALING PERMISSIONS//////////
+				permissionsMap := token.Claims.(jwt.MapClaims)["permissions"]
+				permissionsByte, err := json.Marshal(permissionsMap)
+				if err != nil {
+					log.Error(err)
+					return status.Error(codes.Internal, err.Error())
+				}
+				var permissions []auth.Permission
+				err = json.Unmarshal(permissionsByte, &permissions)
+				if err != nil {
+					log.Error(err)
+					return status.Error(codes.Internal, err.Error())
+				}
+				for _, p := range permissions {
+					fmt.Println(p)
+				}
+
+			}
+
 			res.Authorized = true
 			return nil
 		}
@@ -78,7 +185,7 @@ func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPa
 func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.GetByID request")
 	reqauth := new(auth.Auth)
-	foundauth, err := reqauth.GetbyID(req.Id)
+	foundauth, err := reqauth.GetByID(req.Id)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
@@ -86,7 +193,28 @@ func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID,
 
 	//RESPONSE+
 	res.Id = foundauth.ID
+	res.User = foundauth.User
+	res.Permissions = buildProtoPermission(*foundauth)
+	res.CreatedAt = foundauth.CreatedAt
+	res.ModifiedAt = foundauth.ModifiedAt
+	res.DeletedAt = foundauth.DeletedAt
 
+	return nil
+}
+
+func (e *AuthHandler) GetByUserID(ctx context.Context, req *protoauth.RequestUserID, res *protoauth.ResponseAuth) error {
+	log.Info("Received auth.GetByUserID request")
+	reqauth := new(auth.Auth)
+	foundauth, err := reqauth.GetByUserID(req.User)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE+
+	res.Id = foundauth.ID
+	res.User = foundauth.User
+	res.Permissions = buildProtoPermission(*foundauth)
 	res.CreatedAt = foundauth.CreatedAt
 	res.ModifiedAt = foundauth.ModifiedAt
 	res.DeletedAt = foundauth.DeletedAt
@@ -97,33 +225,50 @@ func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID,
 func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAuth, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.Create request")
 
-	reqauth := &auth.Auth{
-		/*Name:       req.Name,
-		Phone:      req.Phone,
-		Address:    req.Address,
-		District:   req.District,
-		Department: req.Department,
-		Actions:    req.Actions,*/
+	reqAuth := &auth.Auth{
+		User: req.User,
+	}
+	for _, p := range req.Permissions {
+		reqAuth.Permissions = append(reqAuth.Permissions, auth.Permission{
+			Read:        p.Read,
+			Write:       p.Write,
+			Responsible: p.Responsible,
+			Query:       p.Query,
+			Health:      p.Health,
+			QueryPoint:  p.QueryPoint,
+		})
 	}
 
-	err := reqauth.Validate()
+	err := reqAuth.Validate()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	createdauth, err := reqauth.Save()
+	user, err := userClient.GetUserByID(ctx, &protousers.RequestUserID{Id: reqAuth.User})
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	if user.Id == "" {
+		log.Error("User already exist")
+		return status.Error(codes.AlreadyExists, "User already exist")
+	}
+
+	createdAuth, err := reqAuth.Save()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	//RESPONSE
-	res.Id = createdauth.ID
+	fmt.Println(createdAuth)
 
-	res.CreatedAt = createdauth.CreatedAt
-	res.ModifiedAt = createdauth.ModifiedAt
-	res.DeletedAt = createdauth.DeletedAt
+	//RESPONSE
+	res.Id = createdAuth.ID
+	res.Permissions = buildProtoPermission(*createdAuth)
+	res.CreatedAt = createdAuth.CreatedAt
+	res.ModifiedAt = createdAuth.ModifiedAt
+	res.DeletedAt = createdAuth.DeletedAt
 
 	err = pubCreated.Publish(ctx, res)
 	if err != nil {
@@ -135,24 +280,44 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 
 func (e *AuthHandler) Update(ctx context.Context, req *protoauth.RequestUpdateAuth, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.Update request")
-	reqauth := &auth.Auth{
-		ID: req.Id,
-		//User:       req.,
-
+	if req.Id == "" {
+		log.Error("Invalid ID")
+		return status.Error(codes.InvalidArgument, "Invalid ID")
+	}
+	reqAuth := &auth.Auth{
+		ID:   req.Id,
+		User: req.User,
 	}
 
-	updatedauth, err := reqauth.Save()
+	for _, p := range req.Permissions {
+		reqAuth.Permissions = append(reqAuth.Permissions, auth.Permission{
+			Read:        p.Read,
+			Write:       p.Write,
+			Responsible: p.Responsible,
+			Query:       p.Query,
+			Health:      p.Health,
+			QueryPoint:  p.QueryPoint,
+		})
+	}
+
+	err := reqAuth.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	updatedAuth, err := reqAuth.Save()
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
-	res.Id = updatedauth.ID
-
-	res.CreatedAt = updatedauth.CreatedAt
-	res.ModifiedAt = updatedauth.ModifiedAt
-	res.DeletedAt = updatedauth.DeletedAt
+	res.Id = updatedAuth.ID
+	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.CreatedAt = updatedAuth.CreatedAt
+	res.ModifiedAt = updatedAuth.ModifiedAt
+	res.DeletedAt = updatedAuth.DeletedAt
 
 	err = pubMofidied.Publish(ctx, res)
 	if err != nil {
@@ -165,23 +330,103 @@ func (e *AuthHandler) Update(ctx context.Context, req *protoauth.RequestUpdateAu
 func (e *AuthHandler) Delete(ctx context.Context, req *protoauth.RequestAuthID, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.Delete request")
 	reqauth := new(auth.Auth)
-	deletedauth, err := reqauth.Delete(req.Id)
+	deletedAuth, err := reqauth.Delete(req.Id)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE
-	res.Id = deletedauth.ID
-
-	res.CreatedAt = deletedauth.CreatedAt
-	res.ModifiedAt = deletedauth.ModifiedAt
-	res.DeletedAt = deletedauth.DeletedAt
+	res.Id = deletedAuth.ID
+	res.Permissions = buildProtoPermission(*deletedAuth)
+	res.CreatedAt = deletedAuth.CreatedAt
+	res.ModifiedAt = deletedAuth.ModifiedAt
+	res.DeletedAt = deletedAuth.DeletedAt
 
 	err = pubDeleted.Publish(ctx, res)
 	if err != nil {
 		log.Error(err)
 	}
 
+	return nil
+}
+
+func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.RequestPushPermission, res *protoauth.ResponseAuth) error {
+	log.Info("Received auth.PushPermission request")
+	if req.UserID == "" {
+		log.Error("Invalid userID")
+		return status.Error(codes.InvalidArgument, "Invalid userID")
+	}
+
+	reqAuth := &auth.Auth{
+		User: req.UserID,
+	}
+	newPermission := &auth.Permission{
+		Read:        req.Permission.Read,
+		Write:       req.Permission.Write,
+		Responsible: req.Permission.Responsible,
+		Query:       req.Permission.Query,
+		Health:      req.Permission.Health,
+		QueryPoint:  req.Permission.QueryPoint,
+	}
+
+	err := newPermission.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	updatedAuth, err := reqAuth.PushPermission(*newPermission)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE
+	res.Id = updatedAuth.ID
+	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.CreatedAt = updatedAuth.CreatedAt
+	res.ModifiedAt = updatedAuth.ModifiedAt
+	res.DeletedAt = updatedAuth.DeletedAt
+
+	err = pubMofidied.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
+
+	return nil
+}
+
+func (e *AuthHandler) DeletePermission(ctx context.Context, req *protoauth.RequestDeletePermission, res *protoauth.ResponseAuth) error {
+	log.Info("Received auth.DeletePermission request")
+	if req.UserID == "" {
+		log.Error("Invalid userID")
+		return status.Error(codes.InvalidArgument, "Invalid userID")
+	}
+	if req.PermissionID == "" {
+		log.Error("Invalid permissionID")
+		return status.Error(codes.InvalidArgument, "Invalid permissionID")
+	}
+	reqAuth := &auth.Auth{
+		User: req.UserID,
+	}
+
+	updatedAuth, err := reqAuth.DeletePermission(req.PermissionID)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE
+	res.Id = updatedAuth.ID
+	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.CreatedAt = updatedAuth.CreatedAt
+	res.ModifiedAt = updatedAuth.ModifiedAt
+	res.DeletedAt = updatedAuth.DeletedAt
+
+	err = pubMofidied.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
 	return nil
 }

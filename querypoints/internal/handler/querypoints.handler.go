@@ -181,6 +181,12 @@ func (e *QueryPointsHandler) Update(ctx context.Context, req *protoqp.RequestUpd
 		Actions:    req.Actions,
 	}
 
+	err := reqQueryPoint.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	updatedQueryPoint, err := reqQueryPoint.Save()
 	if err != nil {
 		log.Error(err)

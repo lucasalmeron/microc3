@@ -45,9 +45,12 @@ type AuthService interface {
 	LogIn(ctx context.Context, in *RequestAuthLogIn, opts ...client.CallOption) (*ResponseLogIn, error)
 	AuthPath(ctx context.Context, in *RequestAuthPath, opts ...client.CallOption) (*ResponseAuthPath, error)
 	GetByID(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
+	GetByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuth, error)
 	Create(ctx context.Context, in *RequestCreateAuth, opts ...client.CallOption) (*ResponseAuth, error)
 	Update(ctx context.Context, in *RequestUpdateAuth, opts ...client.CallOption) (*ResponseAuth, error)
 	Delete(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
+	PushPermission(ctx context.Context, in *RequestPushPermission, opts ...client.CallOption) (*ResponseAuth, error)
+	DeletePermission(ctx context.Context, in *RequestDeletePermission, opts ...client.CallOption) (*ResponseAuth, error)
 }
 
 type authService struct {
@@ -92,6 +95,16 @@ func (c *authService) GetByID(ctx context.Context, in *RequestAuthID, opts ...cl
 	return out, nil
 }
 
+func (c *authService) GetByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuth, error) {
+	req := c.c.NewRequest(c.name, "Auth.GetByUserID", in)
+	out := new(ResponseAuth)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authService) Create(ctx context.Context, in *RequestCreateAuth, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.Create", in)
 	out := new(ResponseAuth)
@@ -122,15 +135,38 @@ func (c *authService) Delete(ctx context.Context, in *RequestAuthID, opts ...cli
 	return out, nil
 }
 
+func (c *authService) PushPermission(ctx context.Context, in *RequestPushPermission, opts ...client.CallOption) (*ResponseAuth, error) {
+	req := c.c.NewRequest(c.name, "Auth.PushPermission", in)
+	out := new(ResponseAuth)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) DeletePermission(ctx context.Context, in *RequestDeletePermission, opts ...client.CallOption) (*ResponseAuth, error) {
+	req := c.c.NewRequest(c.name, "Auth.DeletePermission", in)
+	out := new(ResponseAuth)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Auth service
 
 type AuthHandler interface {
 	LogIn(context.Context, *RequestAuthLogIn, *ResponseLogIn) error
 	AuthPath(context.Context, *RequestAuthPath, *ResponseAuthPath) error
 	GetByID(context.Context, *RequestAuthID, *ResponseAuth) error
+	GetByUserID(context.Context, *RequestUserID, *ResponseAuth) error
 	Create(context.Context, *RequestCreateAuth, *ResponseAuth) error
 	Update(context.Context, *RequestUpdateAuth, *ResponseAuth) error
 	Delete(context.Context, *RequestAuthID, *ResponseAuth) error
+	PushPermission(context.Context, *RequestPushPermission, *ResponseAuth) error
+	DeletePermission(context.Context, *RequestDeletePermission, *ResponseAuth) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
@@ -138,9 +174,12 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		LogIn(ctx context.Context, in *RequestAuthLogIn, out *ResponseLogIn) error
 		AuthPath(ctx context.Context, in *RequestAuthPath, out *ResponseAuthPath) error
 		GetByID(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
+		GetByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuth) error
 		Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error
 		Update(ctx context.Context, in *RequestUpdateAuth, out *ResponseAuth) error
 		Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
+		PushPermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error
+		DeletePermission(ctx context.Context, in *RequestDeletePermission, out *ResponseAuth) error
 	}
 	type Auth struct {
 		auth
@@ -165,6 +204,10 @@ func (h *authHandler) GetByID(ctx context.Context, in *RequestAuthID, out *Respo
 	return h.AuthHandler.GetByID(ctx, in, out)
 }
 
+func (h *authHandler) GetByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuth) error {
+	return h.AuthHandler.GetByUserID(ctx, in, out)
+}
+
 func (h *authHandler) Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error {
 	return h.AuthHandler.Create(ctx, in, out)
 }
@@ -175,4 +218,12 @@ func (h *authHandler) Update(ctx context.Context, in *RequestUpdateAuth, out *Re
 
 func (h *authHandler) Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error {
 	return h.AuthHandler.Delete(ctx, in, out)
+}
+
+func (h *authHandler) PushPermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error {
+	return h.AuthHandler.PushPermission(ctx, in, out)
+}
+
+func (h *authHandler) DeletePermission(ctx context.Context, in *RequestDeletePermission, out *ResponseAuth) error {
+	return h.AuthHandler.DeletePermission(ctx, in, out)
 }

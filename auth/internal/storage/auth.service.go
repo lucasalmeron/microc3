@@ -22,28 +22,49 @@ func NewAuthService(db *mongo.Database) auth.Repository {
 	return &AuthService{db, db.Collection("auth")}
 }
 
-func (service *AuthService) buildBsonObject(auth auth.Auth) bson.D {
-	return bson.D{
-		{"user", auth.User},
+/*
+ID   string `json:"id" bson:"_id,omitempty"`
+	User string `json:"user" bson:"user"`
+
+	Admin       bool `json:"admin" bson:"admin"`
+	Permissions []struct {
+		Read        bool   `json:"read" bson:"read"`
+		Write       bool   `json:"write" bson:"write"`
+		Responsible bool   `json:"responsible" bson:"responsible"`
+		Query       bool   `json:"query" bson:"query"`
+		Health      bool   `json:"health" bson:"health"`
+		QueryPoint  string `json:"queryPoint" bson:"queryPoint"`
+	} `json:"permissions" bson:"permissions"`
+
+	ModifierUser string `json:"modifierUser" bson:"modifierUser"`
+	CreatedAt    int64  `json:"createdAt" bson:"createdAt"`
+	ModifiedAt   int64  `json:"modifiedAt" bson:"modifiedAt"`
+	DeletedAt    int64  `json:"deletedAt" bson:"deletedAt"`
+*/
+
+func (service *AuthService) buildBsonObject(auth auth.Auth) (bson.D, error) {
+	permissions := bson.A{}
+	for _, permission := range auth.Permissions {
+		permissions = append(permissions, bson.D{
+			{"_id", primitive.NewObjectID()},
+			{"read", permission.Read},
+			{"write", permission.Write},
+			{"responsible", permission.Responsible},
+			{"query", permission.Query},
+			{"health", permission.Health},
+			{"queryPoint", permission.QueryPoint},
+		})
 	}
-
-}
-
-func (service *AuthService) GetList(ctx context.Context) ([]auth.Auth, error) {
-
-	cursor, err := service.collection.Find(ctx, bson.D{{}})
+	userId, err := primitive.ObjectIDFromHex(auth.User)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	defer cursor.Close(ctx)
-	var results []auth.Auth
-	if err = cursor.All(ctx, &results); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return results, nil
+	return bson.D{
+		{"user", userId},
+		{"admin", auth.Admin},
+		{"permissions", permissions},
+	}, nil
 }
 
 func (service *AuthService) GetByID(ctx context.Context, authID string) (*auth.Auth, error) {
@@ -67,9 +88,34 @@ func (service *AuthService) GetByID(ctx context.Context, authID string) (*auth.A
 	return &auth, nil
 }
 
-func (service *AuthService) Create(ctx context.Context, reqauth auth.Auth) (*auth.Auth, error) {
+func (service *AuthService) GetByUserID(ctx context.Context, userID string) (*auth.Auth, error) {
 
-	BSONObj := service.buildBsonObject(reqauth)
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	var auth auth.Auth
+	err = service.collection.FindOne(ctx, bson.D{{"user", objectId}}).Decode(&auth)
+
+	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return &auth, nil
+		}
+		log.Println(err)
+		return nil, err
+	}
+
+	return &auth, nil
+}
+
+func (service *AuthService) Create(ctx context.Context, reqAuth auth.Auth) (*auth.Auth, error) {
+
+	BSONObj, err := service.buildBsonObject(reqAuth)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 	BSONObj = append(BSONObj, bson.E{"createdAt", time.Now().Unix()})
 
 	newauthID, err := service.collection.InsertOne(
@@ -79,13 +125,13 @@ func (service *AuthService) Create(ctx context.Context, reqauth auth.Auth) (*aut
 	if err != nil {
 		return nil, err
 	}
-	reqauth.ID = newauthID.InsertedID.(primitive.ObjectID).Hex()
-	return &reqauth, nil
+	reqAuth.ID = newauthID.InsertedID.(primitive.ObjectID).Hex()
+	return &reqAuth, nil
 }
 
-func (service *AuthService) Update(ctx context.Context, reqauth auth.Auth) (*auth.Auth, error) {
+func (service *AuthService) Update(ctx context.Context, reqAuth auth.Auth) (*auth.Auth, error) {
 
-	objectID, err := primitive.ObjectIDFromHex(reqauth.ID)
+	objectID, err := primitive.ObjectIDFromHex(reqAuth.ID)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -97,7 +143,11 @@ func (service *AuthService) Update(ctx context.Context, reqauth auth.Auth) (*aut
 		ReturnDocument: &after,
 	}
 
-	BSONObj := service.buildBsonObject(reqauth)
+	BSONObj, err := service.buildBsonObject(reqAuth)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 	BSONObj = append(BSONObj, bson.E{Key: "modifiedAt", Value: time.Now().Unix()})
 
 	err = service.collection.FindOneAndUpdate(
@@ -133,6 +183,77 @@ func (service *AuthService) Delete(ctx context.Context, authID string) (*auth.Au
 		bson.D{{"_id", objectID}},
 		bson.M{
 			"$set": bson.M{"deletedAt": time.Now().Unix()},
+		},
+		&opt,
+	).Decode(&auth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth, nil
+}
+
+func (service *AuthService) PushPermission(ctx context.Context, userID string, permission auth.Permission) (*auth.Auth, error) {
+	objectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	var auth auth.Auth
+
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+	}
+
+	err = service.collection.FindOneAndUpdate(
+		ctx,
+		bson.D{{"user", objectID}},
+		bson.M{
+			"$push": bson.M{"permissions": bson.D{
+				{"_id", primitive.NewObjectID()},
+				{"read", permission.Read},
+				{"write", permission.Write},
+				{"responsible", permission.Responsible},
+				{"query", permission.Query},
+				{"health", permission.Health},
+				{"queryPoint", permission.QueryPoint},
+			}},
+		},
+		&opt,
+	).Decode(&auth)
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth, nil
+}
+
+func (service *AuthService) DeletePermission(ctx context.Context, userID string, permissionID string) (*auth.Auth, error) {
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	permissionObjectID, err := primitive.ObjectIDFromHex(permissionID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	var auth auth.Auth
+
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+	}
+
+	err = service.collection.FindOneAndUpdate(
+		ctx,
+		bson.D{{"user", userObjectID}},
+		bson.M{
+			"$pull": bson.M{"permissions": bson.D{
+				{"_id", permissionObjectID},
+			}},
 		},
 		&opt,
 	).Decode(&auth)

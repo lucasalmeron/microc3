@@ -164,7 +164,7 @@ func (e *UsersHandler) LogIn(ctx context.Context, req *protousers.RequestUserLog
 		return status.Error(codes.NotFound, "User doesn't exist")
 	}
 	if !foundUser.ComparePasswords(req.Password) {
-		return status.Error(codes.InvalidArgument, "User doesn't match")
+		return status.Error(codes.InvalidArgument, "User password doesn't match")
 	}
 
 	//RESPONSE+
@@ -256,6 +256,12 @@ func (e *UsersHandler) UpdateUser(ctx context.Context, req *protousers.RequestUp
 		PhoneNumber:    req.PhoneNumber,
 		GDEUser:        req.GDEUser,
 		Position:       req.Position,
+	}
+
+	err := reqUser.Validate() //VALIDATE UPDATE
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	updatedUser, err := reqUser.Save()
