@@ -170,7 +170,10 @@ func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPa
 					return status.Error(codes.Internal, err.Error())
 				}
 				for _, p := range permissions {
+
 					fmt.Println(p)
+					fmt.Println("------")
+					fmt.Println(r.Permissions)
 				}
 
 			}
@@ -184,47 +187,46 @@ func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPa
 
 func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.GetByID request")
-	reqauth := new(auth.Auth)
-	foundauth, err := reqauth.GetByID(req.Id)
+	reqAuth := new(auth.Auth)
+	foundAuth, err := reqAuth.GetByID(req.Id)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE+
-	res.Id = foundauth.ID
-	res.User = foundauth.User
-	res.Permissions = buildProtoPermission(*foundauth)
-	res.CreatedAt = foundauth.CreatedAt
-	res.ModifiedAt = foundauth.ModifiedAt
-	res.DeletedAt = foundauth.DeletedAt
+	res.Id = foundAuth.ID
+	res.User = foundAuth.User
+	res.Permissions = buildProtoPermission(*foundAuth)
+	res.CreatedAt = foundAuth.CreatedAt
+	res.ModifiedAt = foundAuth.ModifiedAt
+	res.DeletedAt = foundAuth.DeletedAt
 
 	return nil
 }
 
 func (e *AuthHandler) GetByUserID(ctx context.Context, req *protoauth.RequestUserID, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.GetByUserID request")
-	reqauth := new(auth.Auth)
-	foundauth, err := reqauth.GetByUserID(req.User)
+	reqAuth := new(auth.Auth)
+	foundAuth, err := reqAuth.GetByUserID(req.User)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	//RESPONSE+
-	res.Id = foundauth.ID
-	res.User = foundauth.User
-	res.Permissions = buildProtoPermission(*foundauth)
-	res.CreatedAt = foundauth.CreatedAt
-	res.ModifiedAt = foundauth.ModifiedAt
-	res.DeletedAt = foundauth.DeletedAt
+	res.Id = foundAuth.ID
+	res.User = foundAuth.User
+	res.Permissions = buildProtoPermission(*foundAuth)
+	res.CreatedAt = foundAuth.CreatedAt
+	res.ModifiedAt = foundAuth.ModifiedAt
+	res.DeletedAt = foundAuth.DeletedAt
 
 	return nil
 }
 
 func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAuth, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.Create request")
-
 	reqAuth := &auth.Auth{
 		User: req.User,
 	}
@@ -368,6 +370,7 @@ func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.Request
 		Query:       req.Permission.Query,
 		Health:      req.Permission.Health,
 		QueryPoint:  req.Permission.QueryPoint,
+		Access:      req.Permission.Access,
 	}
 
 	err := newPermission.Validate()

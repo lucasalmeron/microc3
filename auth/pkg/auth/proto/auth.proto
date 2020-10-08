@@ -45,6 +45,7 @@ message RequestAuthID {
 message RequestUserID {
 	string user = 1;
 }
+  
 
 message Permission {
 	string id = 1;
@@ -54,6 +55,7 @@ message Permission {
 	bool query = 5;
 	bool health = 6;
 	string queryPoint = 7;
+	map<string, string> access = 8;
 }
 
 message ResponseAuth {

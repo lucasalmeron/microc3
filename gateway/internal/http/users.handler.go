@@ -13,6 +13,7 @@ import (
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
+	auth "github.com/lucasalmeron/microc3/auth/pkg/auth"
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
 
 	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
@@ -39,6 +40,8 @@ func InitUserHandler(router *mux.Router) {
 	router.Path("/users/login").HandlerFunc(handler.LogIn).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
+
+	router.Path("/users/pushpermission").HandlerFunc(handler.PushPermission).Methods(http.MethodPut, http.MethodOptions)
 
 }
 
@@ -169,6 +172,37 @@ func (h UsersHandler) Update(w http.ResponseWriter, r *http.Request) {
 		PhoneNumber:    user.PhoneNumber,
 		GDEUser:        user.GDEUser,
 		Position:       user.Position,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) PushPermission(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	reqPermission := struct {
+		User       string          `json:"user"`
+		Permission auth.Permission `json:"permission"`
+	}{}
+
+	if err := decoder.Decode(&reqPermission); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := authClient.PushPermission(context.TODO(), &protoauth.RequestPushPermission{
+		UserID: reqPermission.User,
+		Permission: &protoauth.Permission{
+			Read: reqPermission.Permission.Read,
+		},
 	})
 	if err != nil {
 		log.Print(err)

@@ -53,6 +53,7 @@ func (service *AuthService) buildBsonObject(auth auth.Auth) (bson.D, error) {
 			{"query", permission.Query},
 			{"health", permission.Health},
 			{"queryPoint", permission.QueryPoint},
+			{"access", permission.Access},
 		})
 	}
 	userId, err := primitive.ObjectIDFromHex(auth.User)
@@ -218,6 +219,7 @@ func (service *AuthService) PushPermission(ctx context.Context, userID string, p
 				{"query", permission.Query},
 				{"health", permission.Health},
 				{"queryPoint", permission.QueryPoint},
+				{"access", permission.Access},
 			}},
 		},
 		&opt,
