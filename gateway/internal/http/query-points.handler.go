@@ -1,0 +1,128 @@
+package httphandler
+
+import (
+	"context"
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/gorilla/mux"
+	"github.com/micro/go-micro/v2/client"
+
+	querypoint "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints"
+	protoqp "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
+
+	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
+)
+
+var (
+	queryPointsClient protoqp.QueryPointsService
+)
+
+type QueryPointsHandler struct{}
+
+func InitQueryPointsHandler(router *mux.Router) {
+	//create gRPC clients//
+	queryPointsClient = protoqp.NewQueryPointsService("go.micro.service.querypoints", client.DefaultClient)
+
+	handler := new(QueryPointsHandler)
+
+	router.Path("/querypoints/list").HandlerFunc(handler.GetList).Methods(http.MethodGet, http.MethodOptions)
+	router.Path("/querypoints/id/{queryPointID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetByID).Methods(http.MethodGet, http.MethodOptions)
+
+	router.Path("/querypoints/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
+	router.Path("/querypoints/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
+
+}
+
+func (h QueryPointsHandler) GetList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	response, err := queryPointsClient.GetList(context.TODO(), &empty.Empty{})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h QueryPointsHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	queryPointID := mux.Vars(r)["queryPointID"]
+
+	response, err := queryPointsClient.GetByID(context.TODO(), &protoqp.RequestQueryPointID{
+		Id: queryPointID,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h QueryPointsHandler) Create(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	var querypoint querypoint.QueryPoint
+
+	if err := decoder.Decode(&querypoint); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := queryPointsClient.Create(context.TODO(), &protoqp.RequestCreateQueryPoint{
+		Name:       querypoint.Name,
+		Phone:      querypoint.Phone,
+		Address:    querypoint.Address,
+		District:   querypoint.District,
+		Department: querypoint.Department,
+		Actions:    querypoint.Actions,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h QueryPointsHandler) Update(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	var querypoint querypoint.QueryPoint
+
+	if err := decoder.Decode(&querypoint); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := queryPointsClient.Update(context.TODO(), &protoqp.RequestUpdateQueryPoint{
+		Id:         querypoint.ID,
+		Name:       querypoint.Name,
+		Phone:      querypoint.Phone,
+		Address:    querypoint.Address,
+		District:   querypoint.District,
+		Department: querypoint.Department,
+		Actions:    querypoint.Actions,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}

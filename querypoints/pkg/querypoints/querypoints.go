@@ -14,8 +14,7 @@ type QueryPoint struct {
 	District   string `json:"district" bson:"district"`
 	Department string `json:"department" bson:"department"`
 
-	Responsibles []string `json:"responsibles" bson:"responsibles"`
-	Actions      []string `json:"actions" bson:"actions"`
+	Actions []string `json:"actions" bson:"actions"`
 
 	ModifierUser string `json:"modifierUser" bson:"modifierUser"`
 	CreatedAt    int64  `json:"createdAt" bson:"createdAt"`

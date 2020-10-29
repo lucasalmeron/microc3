@@ -7,6 +7,7 @@ import (
 	"github.com/micro/go-micro/v2/web"
 
 	httphandler "github.com/lucasalmeron/microc3/gateway/internal/http"
+	httpmiddlewares "github.com/lucasalmeron/microc3/gateway/internal/http/middlewares"
 )
 
 type Server struct {
@@ -17,12 +18,13 @@ type Server struct {
 func (srv *Server) Init() {
 
 	srv.router = mux.NewRouter().StrictSlash(true)
-	apiPath := srv.router.PathPrefix("/api")
-	srv.router.Use(httphandler.Middleware)
+	apiPath := srv.router.PathPrefix("/api").Subrouter()
+	srv.router.Use(httpmiddlewares.AuthMiddleware)
 
 	// Only matches if domain is "www.example.com".
 	//router.Host("www.example.com")
-	httphandler.InitUserHandler(apiPath.Subrouter())
+	httphandler.InitUserHandler(apiPath)
+	httphandler.InitQueryPointsHandler(apiPath)
 
 	// create new web service
 	srv.service = web.NewService(

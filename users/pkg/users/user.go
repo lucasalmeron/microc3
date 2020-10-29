@@ -52,13 +52,13 @@ type Page struct {
 }
 
 type PageOptions struct {
-	PageNumber      int64
-	RegistersNumber int64
-	OrderBy         Filter
-	Filters         []Filter
+	PageNumber      int64    `json:"pageNumber"`
+	RegistersNumber int64    `json:"registersNumber"`
+	OrderBy         Filter   `json:"orderBy"`
+	Filters         []Filter `json:"filters"`
 }
 
 type Filter struct {
-	Field string
-	Value string
+	Field string `json:"field"`
+	Value string `json:"value"`
 }

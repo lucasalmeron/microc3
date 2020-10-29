@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
@@ -20,12 +21,15 @@ var (
 	pubCreated  micro.Event
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
+	authClient  protoauth.AuthService
 )
 
 func InitEvents(c client.Client) {
 	pubCreated = micro.NewEvent("go.micro.users.created", c)
 	pubMofidied = micro.NewEvent("go.micro.users.modified", c)
 	pubDeleted = micro.NewEvent("go.micro.users.deleted", c)
+	//create gRPC clients//
+	authClient = protoauth.NewAuthService("go.micro.service.auth", client.DefaultClient)
 }
 
 func buildUserResponse(user user.User) *protousers.ResponseUser {
@@ -67,7 +71,6 @@ func (e *UsersHandler) GetUsers(ctx context.Context, req *empty.Empty, res *prot
 
 func (e *UsersHandler) GetUserByID(ctx context.Context, req *protousers.RequestUserID, res *protousers.ResponseUser) error {
 	log.Info("Received Users.GetUser request")
-	fmt.Println(req.Id)
 	reqUser := new(user.User)
 	foundUser, err := reqUser.GetbyID(req.Id)
 	if err != nil {
@@ -222,6 +225,17 @@ func (e *UsersHandler) CreateUser(ctx context.Context, req *protousers.RequestCr
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
+
+	//////////CREATE PERMISSIONS AFTER CREATE USER//////////
+	_, err = authClient.Create(context.TODO(), &protoauth.RequestCreateAuth{
+		User:        createdUser.ID,
+		Permissions: []*protoauth.Permission{},
+	})
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+	//////////CREATE PERMISSIONS AFTER CREATE USER//////////
 
 	//RESPONSE
 	res.Id = createdUser.ID

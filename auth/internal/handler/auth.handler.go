@@ -29,7 +29,7 @@ var (
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
 	userClient  protousers.UsersService
-	tokenSecret = "565985%$#fjgSAS"
+	tokenSecret = "565985%$#fjgSAS" ///ADD FROM ENVIRONMENT
 )
 
 func InitEvents(c client.Client) {
@@ -259,9 +259,10 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 		log.Error(err)
 		return err
 	}
-	if user.Id != "" {
-		log.Error("User already exist")
-		return status.Error(codes.AlreadyExists, "User already exist")
+
+	if user.Id == "" {
+		log.Error("User doesn't exist")
+		return status.Error(codes.AlreadyExists, "User doesn't exist")
 	}
 
 	createdAuth, err := reqAuth.Save()
@@ -269,8 +270,6 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
-
-	fmt.Println(createdAuth)
 
 	//RESPONSE
 	res.Id = createdAuth.ID
@@ -394,6 +393,7 @@ func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.Request
 
 	//RESPONSE
 	res.Id = updatedAuth.ID
+	res.User = updatedAuth.User
 	res.Permissions = buildProtoPermission(*updatedAuth)
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt
@@ -429,6 +429,7 @@ func (e *AuthHandler) DeletePermission(ctx context.Context, req *protoauth.Reque
 
 	//RESPONSE
 	res.Id = updatedAuth.ID
+	res.User = updatedAuth.User
 	res.Permissions = buildProtoPermission(*updatedAuth)
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt

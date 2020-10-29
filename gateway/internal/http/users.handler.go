@@ -37,11 +37,12 @@ func InitUserHandler(router *mux.Router) {
 	router.Path("/users/email/{email}").HandlerFunc(handler.GetByEmail).Methods(http.MethodGet, http.MethodOptions)
 
 	router.Path("/users/login").HandlerFunc(handler.LogIn).Methods(http.MethodPost, http.MethodOptions)
+	router.Path("/users/paginated").HandlerFunc(handler.GetPaginated).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
 
 	router.Path("/users/pushpermission").HandlerFunc(handler.PushPermission).Methods(http.MethodPut, http.MethodOptions)
-
+	router.Path("/users/deletepermission").HandlerFunc(handler.DeletePermission).Methods(http.MethodPut, http.MethodOptions)
 }
 
 func (h UsersHandler) GetList(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +106,46 @@ func (h UsersHandler) LogIn(w http.ResponseWriter, r *http.Request) {
 	response, err := authClient.LogIn(context.TODO(), &protoauth.RequestAuthLogIn{
 		Email:    logInReq.Email,
 		Password: logInReq.Password,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	var pageOptions user.PageOptions
+
+	if err := decoder.Decode(&pageOptions); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+	var filters []*protousers.RequestPageOptions_Filter
+	if len(pageOptions.Filters) > 0 {
+		for _, f := range pageOptions.Filters {
+			filters = append(filters, &protousers.RequestPageOptions_Filter{
+				Field: f.Field,
+				Value: f.Value,
+			})
+		}
+	}
+
+	response, err := userClient.GetPaginatedUsers(context.TODO(), &protousers.RequestPageOptions{
+		PageNumber:      pageOptions.PageNumber,
+		RegistersNumber: pageOptions.RegistersNumber,
+		OrderBy: &protousers.RequestPageOptions_Filter{
+			Field: pageOptions.OrderBy.Field,
+			Value: pageOptions.OrderBy.Value,
+		},
+		Filters: filters,
 	})
 	if err != nil {
 		log.Print(err)
@@ -236,6 +277,34 @@ func (h UsersHandler) PushPermission(w http.ResponseWriter, r *http.Request) {
 		Permission: &protoauth.Permission{
 			Access: accessMap,
 		},
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) DeletePermission(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	req := struct {
+		User         string `json:"user"`
+		PermissionID string `json:"permission"`
+	}{}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	response, err := authClient.DeletePermission(context.TODO(), &protoauth.RequestDeletePermission{
+		UserID:       req.User,
+		PermissionID: req.PermissionID,
 	})
 	if err != nil {
 		log.Print(err)

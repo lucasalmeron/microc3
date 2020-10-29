@@ -1,4 +1,4 @@
-package httphandler
+package httpmiddlewares
 
 import (
 	"context"
@@ -8,9 +8,14 @@ import (
 
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
 	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
+	"github.com/micro/go-micro/v2/client"
 )
 
-func Middleware(next http.Handler) http.Handler {
+var (
+	authClient = protoauth.NewAuthService("go.micro.service.auth", client.DefaultClient)
+)
+
+func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		response, err := authClient.AuthPath(context.TODO(), &protoauth.RequestAuthPath{

@@ -38,7 +38,19 @@ func LoadUsersRoutes() {
 		},
 		{
 			ID:          uuid.New().String(),
+			Path:        "/api/users/update",
+			Method:      http.MethodPut,
+			Permissions: []string{},
+		},
+		{
+			ID:          uuid.New().String(),
 			Path:        "/api/users/pushpermission",
+			Method:      http.MethodPut,
+			Permissions: []string{},
+		},
+		{
+			ID:          uuid.New().String(),
+			Path:        "/api/users/deletepermission",
 			Method:      http.MethodPut,
 			Permissions: []string{},
 		},

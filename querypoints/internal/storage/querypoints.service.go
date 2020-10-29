@@ -29,7 +29,6 @@ func (service *QueryPointService) buildBsonObject(querypoint querypoint.QueryPoi
 		{"address", querypoint.Address},
 		{"district", querypoint.District},
 		{"department", querypoint.Department},
-		{"responsibles", querypoint.Responsibles},
 		{"actions", querypoint.Actions},
 	}
 
