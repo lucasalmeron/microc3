@@ -22,6 +22,10 @@ func Middleware(next http.Handler) http.Handler {
 
 		if err != nil {
 			log.Print(err)
+			/*errStatus, _ := status.FromError(err)
+			fmt.Println(errStatus.Message())
+			fmt.Println(errStatus.Code())*/
+
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusForbidden, errorprovider.ConvertToJSON(err)})
 			return

@@ -6,6 +6,7 @@ import (
 	"os/signal"
 
 	"github.com/lucasalmeron/microc3/auth/internal/handler"
+	"github.com/lucasalmeron/microc3/auth/internal/routes"
 	mongostorage "github.com/lucasalmeron/microc3/auth/internal/storage"
 	"github.com/lucasalmeron/microc3/auth/internal/subscriber"
 
@@ -38,6 +39,11 @@ func (srv *GRPCServer) Init() {
 	srv.registerHandlers()
 	srv.registerEventSubscribers()
 
+}
+
+func (srv *GRPCServer) LoadAuthRoutes() {
+	routes.LoadUsersRoutes()
+	routes.LoadQueryPointsRoutes()
 }
 
 func (srv *GRPCServer) registerHandlers() error {

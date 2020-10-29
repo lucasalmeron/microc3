@@ -44,14 +44,13 @@ func buildProtoPermission(auth auth.Auth) []*protoauth.Permission {
 	permissions := make([]*protoauth.Permission, 0)
 
 	for _, p := range auth.Permissions {
+		parsedMap := make(map[string]string)
+		for key, value := range p.Access {
+			parsedMap[key] = fmt.Sprintf("%v", value)
+		}
 		permissions = append(permissions, &protoauth.Permission{
-			Id:          p.ID,
-			Read:        p.Read,
-			Write:       p.Write,
-			Responsible: p.Responsible,
-			Query:       p.Query,
-			Health:      p.Health,
-			QueryPoint:  p.QueryPoint,
+			Id:     p.ID,
+			Access: parsedMap,
 		})
 	}
 
@@ -88,8 +87,6 @@ func (e *AuthHandler) LogIn(ctx context.Context, req *protoauth.RequestAuthLogIn
 		log.Error(err)
 		return err
 	}
-
-	// REMEMBER TO ADD QUERYPOINT//
 
 	signedTime := time.Now()
 
@@ -151,31 +148,42 @@ func (e *AuthHandler) AuthPath(ctx context.Context, req *protoauth.RequestAuthPa
 					log.Error("Invalid Token")
 					return status.Error(codes.PermissionDenied, "Invalid Token")
 				}
+
 				//IF ADMIN IS AUTHORIZED
 				if token.Claims.(jwt.MapClaims)["admin"] == true {
 					res.Authorized = true
 					return nil
 				}
+
 				///////////UNMARSHALING PERMISSIONS//////////
-				permissionsMap := token.Claims.(jwt.MapClaims)["permissions"]
-				permissionsByte, err := json.Marshal(permissionsMap)
+				// convert token to struct
+				tokenByte, err := json.Marshal(token.Claims.(jwt.MapClaims)["permissions"])
 				if err != nil {
 					log.Error(err)
 					return status.Error(codes.Internal, err.Error())
 				}
 				var permissions []auth.Permission
-				err = json.Unmarshal(permissionsByte, &permissions)
+				err = json.Unmarshal(tokenByte, &permissions)
 				if err != nil {
 					log.Error(err)
 					return status.Error(codes.Internal, err.Error())
 				}
+				// convert token to struct
+				var Authorize bool
 				for _, p := range permissions {
 
-					fmt.Println(p)
-					fmt.Println("------")
-					fmt.Println(r.Permissions)
+					for _, permissionRequired := range r.Permissions {
+						if _, ok := p.Access[permissionRequired]; ok {
+							Authorize = true
+						}
+					}
 				}
-
+				if Authorize {
+					res.Authorized = true
+				} else {
+					res.Authorized = false
+				}
+				return nil
 			}
 
 			res.Authorized = true
@@ -231,13 +239,12 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 		User: req.User,
 	}
 	for _, p := range req.Permissions {
+		parsedMap := make(map[string]interface{})
+		for key, value := range p.Access {
+			parsedMap[key] = value
+		}
 		reqAuth.Permissions = append(reqAuth.Permissions, auth.Permission{
-			Read:        p.Read,
-			Write:       p.Write,
-			Responsible: p.Responsible,
-			Query:       p.Query,
-			Health:      p.Health,
-			QueryPoint:  p.QueryPoint,
+			Access: parsedMap,
 		})
 	}
 
@@ -252,7 +259,7 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 		log.Error(err)
 		return err
 	}
-	if user.Id == "" {
+	if user.Id != "" {
 		log.Error("User already exist")
 		return status.Error(codes.AlreadyExists, "User already exist")
 	}
@@ -292,13 +299,12 @@ func (e *AuthHandler) Update(ctx context.Context, req *protoauth.RequestUpdateAu
 	}
 
 	for _, p := range req.Permissions {
+		parsedMap := make(map[string]interface{})
+		for key, value := range p.Access {
+			parsedMap[key] = value
+		}
 		reqAuth.Permissions = append(reqAuth.Permissions, auth.Permission{
-			Read:        p.Read,
-			Write:       p.Write,
-			Responsible: p.Responsible,
-			Query:       p.Query,
-			Health:      p.Health,
-			QueryPoint:  p.QueryPoint,
+			Access: parsedMap,
 		})
 	}
 
@@ -355,6 +361,7 @@ func (e *AuthHandler) Delete(ctx context.Context, req *protoauth.RequestAuthID, 
 
 func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.RequestPushPermission, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.PushPermission request")
+
 	if req.UserID == "" {
 		log.Error("Invalid userID")
 		return status.Error(codes.InvalidArgument, "Invalid userID")
@@ -363,14 +370,14 @@ func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.Request
 	reqAuth := &auth.Auth{
 		User: req.UserID,
 	}
+
+	parsedMap := make(map[string]interface{})
+	for key, value := range req.Permission.Access {
+		parsedMap[key] = value
+	}
+
 	newPermission := &auth.Permission{
-		Read:        req.Permission.Read,
-		Write:       req.Permission.Write,
-		Responsible: req.Permission.Responsible,
-		Query:       req.Permission.Query,
-		Health:      req.Permission.Health,
-		QueryPoint:  req.Permission.QueryPoint,
-		Access:      req.Permission.Access,
+		Access: parsedMap,
 	}
 
 	err := newPermission.Validate()

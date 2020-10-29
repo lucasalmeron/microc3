@@ -14,14 +14,8 @@ import (
 	QueryPoint  string `json:"queryPoint" bson:"queryPoint"`
 }*/
 type Permission struct {
-	ID          string            `json:"id" bson:"_id,omitempty"`
-	Access      map[string]string `json:"access" bson:"access"`
-	Read        bool              `json:"read" bson:"read"`
-	Write       bool              `json:"write" bson:"write"`
-	Responsible bool              `json:"responsible" bson:"responsible"`
-	Query       bool              `json:"query" bson:"query"`
-	Health      bool              `json:"health" bson:"health"`
-	QueryPoint  string            `json:"queryPoint" bson:"queryPoint"`
+	ID     string                 `json:"id" bson:"_id,omitempty"`
+	Access map[string]interface{} `json:"access" bson:"access"`
 }
 
 type Auth struct {

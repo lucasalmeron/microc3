@@ -13,7 +13,6 @@ import (
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
-	auth "github.com/lucasalmeron/microc3/auth/pkg/auth"
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
 
 	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
@@ -185,23 +184,57 @@ func (h UsersHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 func (h UsersHandler) PushPermission(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	decoder := json.NewDecoder(r.Body)
 
-	reqPermission := struct {
-		User       string          `json:"user"`
-		Permission auth.Permission `json:"permission"`
+	req := struct {
+		User       string `json:"user"`
+		Permission struct {
+			Access map[string]string `json:"access"`
+		} `json:"permission"`
 	}{}
 
-	if err := decoder.Decode(&reqPermission); err != nil {
+	//accessMap := make(map[string]string)
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
 		return
 	}
 
+	/*
+		Read        bool
+		Write       bool
+		Responsible bool
+		Query       bool
+		Health      bool
+	*/
+	accessMap := make(map[string]string)
+
+	// REMEMBER TO VALIDATE QUERYPOINT//
+	for key, value := range req.Permission.Access {
+		if key == "queryPoint" {
+			accessMap["queryPoint"] = value
+		}
+		if key == "read" {
+			accessMap["read"] = value
+		}
+		if key == "write" {
+			accessMap["write"] = value
+		}
+		if key == "responsible" {
+			accessMap["responsible"] = value
+		}
+		if key == "query" {
+			accessMap["query"] = value
+		}
+		if key == "health" {
+			accessMap["health"] = value
+		}
+	}
+
 	response, err := authClient.PushPermission(context.TODO(), &protoauth.RequestPushPermission{
-		UserID: reqPermission.User,
+		UserID: req.User,
 		Permission: &protoauth.Permission{
-			Read: reqPermission.Permission.Read,
+			Access: accessMap,
 		},
 	})
 	if err != nil {

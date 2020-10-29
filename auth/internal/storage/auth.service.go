@@ -2,6 +2,7 @@ package mongostorage
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -47,12 +48,6 @@ func (service *AuthService) buildBsonObject(auth auth.Auth) (bson.D, error) {
 	for _, permission := range auth.Permissions {
 		permissions = append(permissions, bson.D{
 			{"_id", primitive.NewObjectID()},
-			{"read", permission.Read},
-			{"write", permission.Write},
-			{"responsible", permission.Responsible},
-			{"query", permission.Query},
-			{"health", permission.Health},
-			{"queryPoint", permission.QueryPoint},
 			{"access", permission.Access},
 		})
 	}
@@ -213,12 +208,6 @@ func (service *AuthService) PushPermission(ctx context.Context, userID string, p
 		bson.M{
 			"$push": bson.M{"permissions": bson.D{
 				{"_id", primitive.NewObjectID()},
-				{"read", permission.Read},
-				{"write", permission.Write},
-				{"responsible", permission.Responsible},
-				{"query", permission.Query},
-				{"health", permission.Health},
-				{"queryPoint", permission.QueryPoint},
 				{"access", permission.Access},
 			}},
 		},
@@ -227,6 +216,7 @@ func (service *AuthService) PushPermission(ctx context.Context, userID string, p
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(auth)
 
 	return &auth, nil
 }

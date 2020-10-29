@@ -7,5 +7,6 @@ func main() {
 
 	srv.ConnectMongoDB()
 	srv.Init()
+	srv.LoadAuthRoutes()
 	srv.StartAndListen()
 }

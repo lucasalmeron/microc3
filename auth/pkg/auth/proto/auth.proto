@@ -49,12 +49,6 @@ message RequestUserID {
 
 message Permission {
 	string id = 1;
-	bool read = 2;
-	bool write = 3;
-	bool responsible = 4;
-	bool query = 5;
-	bool health = 6;
-	string queryPoint = 7;
 	map<string, string> access = 8;
 }
 
