@@ -99,7 +99,11 @@ func (e *QueryPointsHandler) GetPaginated(ctx context.Context, req *protoqp.Requ
 	for _, filter := range req.Filters {
 		pageOptions.Filters = append(pageOptions.Filters, user.Filter{filter.Field, filter.Value})
 	}
-	pageOptions.Validate()
+	err := pageOptions.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
 
 	reqQueryPoint := new(querypoint.QueryPoint)
 

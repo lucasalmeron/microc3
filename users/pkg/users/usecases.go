@@ -85,7 +85,7 @@ func (p *PageOptions) Validate() error {
 		return errors.New("pageNumber must be greater than 1")
 	}
 	if p.RegistersNumber < 2 || p.RegistersNumber > 10 {
-		return errors.New("pageNumber must be greater than 2 and less than 10")
+		p.RegistersNumber = 10
 	}
 	if p.OrderBy.Field != "" || p.OrderBy.Value != "" {
 		if p.OrderBy.Field == "" {

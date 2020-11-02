@@ -37,7 +37,7 @@ func InitEvents(c client.Client) {
 	pubMofidied = micro.NewEvent("go.micro.auth.modified", c)
 	pubDeleted = micro.NewEvent("go.micro.auth.deleted", c)
 	//create gRPC clients//
-	userClient = protousers.NewUsersService("go.micro.service.users", client.DefaultClient)
+	userClient = protousers.NewUsersService("go.micro.service.users", c)
 }
 
 func buildProtoPermission(auth auth.Auth) []*protoauth.Permission {

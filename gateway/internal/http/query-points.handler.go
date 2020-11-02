@@ -12,6 +12,7 @@ import (
 
 	querypoint "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints"
 	protoqp "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
+	user "github.com/lucasalmeron/microc3/users/pkg/users"
 
 	errorprovider "github.com/lucasalmeron/microc3/gateway/internal/helper"
 )
@@ -30,6 +31,8 @@ func InitQueryPointsHandler(router *mux.Router) {
 
 	router.Path("/querypoints/list").HandlerFunc(handler.GetList).Methods(http.MethodGet, http.MethodOptions)
 	router.Path("/querypoints/id/{queryPointID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetByID).Methods(http.MethodGet, http.MethodOptions)
+
+	router.Path("/querypoints/paginated").HandlerFunc(handler.GetPaginated).Methods(http.MethodPost, http.MethodOptions)
 
 	router.Path("/querypoints/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/querypoints/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
@@ -63,6 +66,57 @@ func (h QueryPointsHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h QueryPointsHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	decoder := json.NewDecoder(r.Body)
+
+	/* EXAMPLE
+	{
+		"pageNumber":1,
+		"registersNumber":10,
+		"filters":[
+			{"field":"email","value":"luko.ar@gmail.com"}
+		]
+	}
+	*/
+
+	var pageOptions user.PageOptions
+
+	if err := decoder.Decode(&pageOptions); err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+	var filters []*protoqp.RequestPageOptions_Filter
+	if len(pageOptions.Filters) > 0 {
+		for _, f := range pageOptions.Filters {
+			filters = append(filters, &protoqp.RequestPageOptions_Filter{
+				Field: f.Field,
+				Value: f.Value,
+			})
+		}
+	}
+
+	response, err := queryPointsClient.GetPaginated(context.TODO(), &protoqp.RequestPageOptions{
+		PageNumber:      pageOptions.PageNumber,
+		RegistersNumber: pageOptions.RegistersNumber,
+		OrderBy: &protoqp.RequestPageOptions_Filter{
+			Field: pageOptions.OrderBy.Field,
+			Value: pageOptions.OrderBy.Value,
+		},
+		Filters: filters,
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
 	json.NewEncoder(w).Encode(response)
 }
 

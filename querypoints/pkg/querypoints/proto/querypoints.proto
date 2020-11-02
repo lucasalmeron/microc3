@@ -4,6 +4,8 @@ import "google/protobuf/empty.proto";
 
 package go.micro.service.querypoints;
 
+option go_package = "github.com/lucasalmeron/microc3/querypoints/pkg/proto";
+
 service QueryPoints {
 	rpc GetPaginated(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetList(google.protobuf.Empty) returns (ResponseQueryPointsArray) {}

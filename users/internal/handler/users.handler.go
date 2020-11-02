@@ -29,7 +29,7 @@ func InitEvents(c client.Client) {
 	pubMofidied = micro.NewEvent("go.micro.users.modified", c)
 	pubDeleted = micro.NewEvent("go.micro.users.deleted", c)
 	//create gRPC clients//
-	authClient = protoauth.NewAuthService("go.micro.service.auth", client.DefaultClient)
+	authClient = protoauth.NewAuthService("go.micro.service.auth", c)
 }
 
 func buildUserResponse(user user.User) *protousers.ResponseUser {
@@ -129,7 +129,11 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 	for _, filter := range req.Filters {
 		pageOptions.Filters = append(pageOptions.Filters, user.Filter{filter.Field, filter.Value})
 	}
-	pageOptions.Validate()
+	err := pageOptions.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
 
 	reqUser := new(user.User)
 

@@ -157,6 +157,8 @@ func (service *UserService) GetPaginated(ctx context.Context, pageOptions *user.
 		sortStage = buildBSONOrderBy("createdAt", "desc")
 	}
 
+	mongoPipeline := mongo.Pipeline{}
+
 	projectStage1 := bson.D{{"$project", bson.M{
 		"_id":            "$_id",
 		"firstName":      "$firstName",
@@ -171,7 +173,15 @@ func (service *UserService) GetPaginated(ctx context.Context, pageOptions *user.
 		"modifiedAt":     "$modifiedAt",
 		"deletedAt":      "$deletedAt",
 	}}}
-	matchStage := bson.D{{"$match", bson.D{{"$and", queryAnd}}}}
+	mongoPipeline = append(mongoPipeline, projectStage1)
+
+	if len(pageOptions.Filters) > 0 {
+		matchStage := bson.D{{"$match", bson.D{{"$and", queryAnd}}}}
+		mongoPipeline = append(mongoPipeline, matchStage)
+	}
+
+	mongoPipeline = append(mongoPipeline, sortStage)
+
 	groupStage := bson.D{
 		{"$group", bson.D{
 			{"_id", nil},
@@ -194,12 +204,16 @@ func (service *UserService) GetPaginated(ctx context.Context, pageOptions *user.
 			}},
 			}},
 		}}
+	mongoPipeline = append(mongoPipeline, groupStage)
+
 	projectStage2 := bson.D{{"$project", bson.D{
 		{"data", bson.D{{"$slice", bson.A{"$users", pageOptions.RegistersNumber * (pageOptions.PageNumber - 1), pageOptions.RegistersNumber}}}},
 		{"length", "$count"},
 	}}}
 
-	cursor, err := service.collection.Aggregate(ctx, mongo.Pipeline{projectStage1, matchStage, sortStage, groupStage, projectStage2})
+	mongoPipeline = append(mongoPipeline, projectStage2)
+
+	cursor, err := service.collection.Aggregate(ctx, mongoPipeline)
 	if err != nil {
 		log.Println(err)
 		return nil, err

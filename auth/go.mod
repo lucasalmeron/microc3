@@ -11,7 +11,7 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.3
-	github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5
+	github.com/lucasalmeron/microc3/users v0.0.0-20201029213517-44d0822db567
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/micro/go-plugins/broker/rabbitmq/v2 v2.9.1
 	go.mongodb.org/mongo-driver v1.4.1

@@ -32,6 +32,12 @@ func LoadUsersRoutes() {
 		},
 		{
 			ID:          uuid.New().String(),
+			Path:        "/api/users/paginated",
+			Method:      http.MethodPost,
+			Permissions: []string{"admin"},
+		},
+		{
+			ID:          uuid.New().String(),
 			Path:        "/api/users/create",
 			Method:      http.MethodPost,
 			Permissions: []string{},

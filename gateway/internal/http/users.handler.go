@@ -121,9 +121,20 @@ func (h UsersHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	decoder := json.NewDecoder(r.Body)
 
+	/* EXAMPLE
+	{
+		"pageNumber":1,
+		"registersNumber":10,
+		"filters":[
+			{"field":"email","value":"luko.ar@gmail.com"}
+		]
+	}
+	*/
+
 	var pageOptions user.PageOptions
 
 	if err := decoder.Decode(&pageOptions); err != nil {
+		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
 		return
