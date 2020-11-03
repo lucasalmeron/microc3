@@ -1,12 +1,11 @@
 
 GOPATH:=$(shell go env GOPATH)
-MODIFY=Mproto/imports/api.proto=github.com/micro/go-micro/v2/api/proto
+MODIFY=Mproto/imports/api.proto=github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto
 
 .PHONY: proto
 proto:
     
-	protoc --proto_path=. --micro_out=. --go_out=. --go_opt=paths=source_relative pkg/querypoints/proto/querypoints.proto
-    
+	protoc --proto_path=. --go_opt=paths=source_relative --micro_out=${MODIFY}:. --go_out=${MODIFY}:. pkg/querypoints/proto/querypoints.proto
 
 .PHONY: build
 build: proto
