@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package go.micro.service.querypoints;
+package querypoints;
 
-option go_package = "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto";
+option go_package = "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto;querypoints";
 
 service QueryPoints {
 	rpc GetPaginated(RequestPageOptions) returns (ResponsePage) {}

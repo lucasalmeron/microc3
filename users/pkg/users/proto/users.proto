@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-//import "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto";
+import "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto";
 
 package go.micro.service.users;
 
