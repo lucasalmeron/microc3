@@ -2,8 +2,6 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-import "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto/querypoints.proto";
-
 package go.micro.service.users;
 
 service Users {
@@ -83,7 +81,7 @@ message ResponseUserQP {
 	string GDEUser = 7;
 	string position = 8;
 
-	querypoints.ResponseQueryPoint asd = 10;
+	ResponseQueryPoint querypoint = 10;
 
 	int64 createdAt = 11;
 	int64 modifiedAt = 12;
@@ -112,4 +110,22 @@ message RequestUpdateUser {
 	string phoneNumber = 7;
 	string GDEUser = 8;
 	string position = 9;
+}
+
+
+
+/////////////////QP///////////////////
+
+message ResponseQueryPoint {
+	string id = 1;
+	string name = 2;
+	string phone = 3;
+	string address = 4;
+	string district = 5;
+	string department = 6;
+	repeated string actions = 7;
+
+	int64 createdAt = 8;
+	int64 modifiedAt = 9;
+	int64 deletedAt = 10;
 }

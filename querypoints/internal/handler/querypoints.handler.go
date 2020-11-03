@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/micro/go-micro/v2"
@@ -87,6 +88,43 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 	res.DeletedAt = foundQueryPoint.DeletedAt
 
 	return nil
+}
+
+func (e *QueryPointsHandler) GetByIDs(ctx context.Context, stream protoqp.QueryPoints_GetByIDsStream) error {
+	log.Info("Received QueryPoints.GetByID request")
+	reqQueryPoint := new(querypoint.QueryPoint)
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		foundQueryPoint, err := reqQueryPoint.GetbyID(req.Id)
+		if err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
+		}
+
+		err = stream.Send(&protoqp.ResponseQueryPoint{
+			Id:         foundQueryPoint.ID,
+			Name:       foundQueryPoint.Name,
+			Phone:      foundQueryPoint.Phone,
+			Address:    foundQueryPoint.Address,
+			District:   foundQueryPoint.District,
+			Department: foundQueryPoint.Department,
+			Actions:    foundQueryPoint.Actions,
+			CreatedAt:  foundQueryPoint.CreatedAt,
+			ModifiedAt: foundQueryPoint.ModifiedAt,
+			DeletedAt:  foundQueryPoint.DeletedAt,
+		})
+		if err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
+		}
+	}
 }
 
 func (e *QueryPointsHandler) GetPaginated(ctx context.Context, req *protoqp.RequestPageOptions, res *protoqp.ResponsePage) error {

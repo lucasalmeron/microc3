@@ -2,14 +2,13 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package querypoints;
-
-option go_package = "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto";
+package go.micro.service.querypoints;
 
 service QueryPoints {
 	rpc GetPaginated(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetList(google.protobuf.Empty) returns (ResponseQueryPointsArray) {}
 	rpc GetByID(RequestQueryPointID) returns (ResponseQueryPoint) {}
+	rpc GetByIDs(stream RequestQueryPointID) returns (stream ResponseQueryPoint) {}
 	rpc Create(RequestCreateQueryPoint) returns (ResponseQueryPoint) {}
 	rpc Update(RequestUpdateQueryPoint) returns (ResponseQueryPoint) {}
 	rpc Delete(RequestQueryPointID) returns (ResponseQueryPoint) {}

@@ -5,7 +5,7 @@ MODIFY=Mproto/imports/api.proto=github.com/lucasalmeron/microc3/querypoints/pkg/
 .PHONY: proto
 proto:
     
-	protoc --proto_path=. --go_opt=paths=source_relative --micro_out=${MODIFY}:. --go_out=${MODIFY}:. pkg/querypoints/proto/querypoints.proto
+	protoc --proto_path=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. pkg/querypoints/proto/querypoints.proto
 
 .PHONY: build
 build: proto
