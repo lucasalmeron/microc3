@@ -23,6 +23,12 @@ func LoadQueryPointsRoutes() {
 		},
 		{
 			ID:          uuid.New().String(),
+			Path:        "/api/querypoints/name/{name}",
+			Method:      http.MethodGet,
+			Permissions: []string{"admin", "query"},
+		},
+		{
+			ID:          uuid.New().String(),
 			Path:        "/api/querypoints/paginated",
 			Method:      http.MethodPost,
 			Permissions: []string{"admin"},

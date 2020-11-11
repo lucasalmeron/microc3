@@ -26,7 +26,7 @@ func (queryPoint *QueryPoint) GetbyID(queryPointID string) (*QueryPoint, error) 
 	return repository.GetByID(context.TODO(), queryPointID)
 }
 
-func (queryPoint *QueryPoint) GetbyName(queryString string) (*QueryPoint, error) {
+func (queryPoint *QueryPoint) GetbyName(queryString string) ([]QueryPoint, error) {
 	return repository.GetByName(context.TODO(), queryString)
 }
 

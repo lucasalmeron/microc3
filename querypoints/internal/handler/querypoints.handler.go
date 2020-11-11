@@ -90,26 +90,22 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 	return nil
 }
 
-func (e *QueryPointsHandler) GetByName(ctx context.Context, req *protoqp.RequestQueryPointQuery, res *protoqp.ResponseQueryPoint) error {
+func (e *QueryPointsHandler) GetByName(ctx context.Context, req *protoqp.RequestQueryPointQuery, res *protoqp.ResponseQueryPointsArray) error {
 	log.Info("Received QueryPoints.GetByName request")
 	reqQueryPoint := new(querypoint.QueryPoint)
-	foundQueryPoint, err := reqQueryPoint.GetbyName(req.Query)
+	foundQueryPoints, err := reqQueryPoint.GetbyName(req.Query)
 	if err != nil {
 		log.Error(err)
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	var response []*protoqp.ResponseQueryPoint
+	for _, u := range foundQueryPoints {
+		response = append(response, buildUserResponse(u))
+	}
+
 	//RESPONSE+
-	res.Id = foundQueryPoint.ID
-	res.Name = foundQueryPoint.Name
-	res.Phone = foundQueryPoint.Phone
-	res.Address = foundQueryPoint.Address
-	res.District = foundQueryPoint.District
-	res.Department = foundQueryPoint.Department
-	res.Actions = foundQueryPoint.Actions
-	res.CreatedAt = foundQueryPoint.CreatedAt
-	res.ModifiedAt = foundQueryPoint.ModifiedAt
-	res.DeletedAt = foundQueryPoint.DeletedAt
+	res.QueryPoints = response
 
 	return nil
 }

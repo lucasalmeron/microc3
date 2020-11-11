@@ -8,7 +8,7 @@ service QueryPoints {
 	rpc GetPaginated(RequestPageOptions) returns (ResponsePage) {}
 	rpc GetList(google.protobuf.Empty) returns (ResponseQueryPointsArray) {}
 	rpc GetByID(RequestQueryPointID) returns (ResponseQueryPoint) {}
-	rpc GetByName(RequestQueryPointQuery) returns (ResponseQueryPoint) {}
+	rpc GetByName(RequestQueryPointQuery) returns (ResponseQueryPointsArray) {}
 	rpc GetByIDs(stream RequestQueryPointID) returns (stream ResponseQueryPoint) {}
 	rpc Create(RequestCreateQueryPoint) returns (ResponseQueryPoint) {}
 	rpc Update(RequestUpdateQueryPoint) returns (ResponseQueryPoint) {}

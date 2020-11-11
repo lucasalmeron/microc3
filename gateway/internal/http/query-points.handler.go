@@ -3,6 +3,7 @@ package httphandler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -72,18 +73,21 @@ func (h QueryPointsHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 func (h QueryPointsHandler) GetByName(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	/*
-		name := mux.Vars(r)["name"]
 
-		response, err := queryPointsClient
+	name := mux.Vars(r)["name"]
 
-		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
-			return
-		}
-		json.NewEncoder(w).Encode(response)*/
+	response, err := queryPointsClient.GetByName(context.TODO(), &protoqp.RequestQueryPointQuery{
+		Query: name,
+	})
+	fmt.Println(response)
+
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+	json.NewEncoder(w).Encode(response)
 }
 
 func (h QueryPointsHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {

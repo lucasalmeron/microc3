@@ -307,6 +307,8 @@ github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e h
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e/go.mod h1:tmYek4DzAC+D9HPaQMYCnYqAtMEc2XWwZ6yx7HjOryM=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111180840-439ebebfaa68 h1:5710aWz7vIDylZ7eh0PMZs9/HLB/fIIYjKzh1FAfB0k=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111180840-439ebebfaa68/go.mod h1:tmYek4DzAC+D9HPaQMYCnYqAtMEc2XWwZ6yx7HjOryM=
+github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111210833-6b5aaaab6010 h1:mJ+bxGpWnuZvuqOJ1UYXDa93nq9tf1UDPItXpRX32fQ=
+github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111210833-6b5aaaab6010/go.mod h1:sN5Zn90E6uz2nHe4Gyvj+2+1ITxyMklOZIEtJ/45+0k=
 github.com/lucasalmeron/microc3/users v0.0.0-20200923231205-cdef43fcb4be/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5 h1:agE5Xcr/UDLAae2SFKRyBnhXgr1s5HzOg9sJO9EV9ts=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
@@ -315,8 +317,6 @@ github.com/lucasalmeron/microc3/users v0.0.0-20201029213517-44d0822db567/go.mod 
 github.com/lucasalmeron/microc3/users v0.0.0-20201111161033-c2ee06597534/go.mod h1:sNBlp8JZrN5Y0c+OkeI8vb9CZJ/4Y7TSSrqrnd2AcYA=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e h1:2cPSBRckctJC1WUEjwKEC9c95XXEb7xMoi44C7hSMug=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e/go.mod h1:zNgXcY9INaBb2lc7x5lfBRfwi81JaiBXDpBwqrVVdYE=
-github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046 h1:Oqd13WPpntLB+veaRMv/K48+gPWL+WWSGL9O1BHRwSo=
-github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046/go.mod h1:Ag0OtQMX+Enpm582gXQLirp2oT1zv6LZcsJu4qfHWrk=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68 h1:9t4HXbPEHlu63P2+hmnUe/ccQKPZoTENPp9gLhAM/AE=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68/go.mod h1:Ag0OtQMX+Enpm582gXQLirp2oT1zv6LZcsJu4qfHWrk=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
