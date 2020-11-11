@@ -203,40 +203,53 @@ func (e *UsersHandler) GetPaginatedWithQP(ctx context.Context, req *protousers.R
 	}
 	for i, u := range paginatedUsers.Data {
 
-		err = stream.Send(&protoqp.RequestQueryPointID{Id: u.Querypoint})
+		querypointsIDs, err := authClient.GetQueryPointsByUserID(context.TODO(), &protoauth.RequestUserID{User: u.ID})
 		if err != nil {
 			log.Error(err)
 			return status.Error(codes.Internal, err.Error())
 		}
-		rsp, err := stream.Recv()
-		if err != nil {
-			log.Error(err)
-			return status.Error(codes.Internal, err.Error())
-		}
+
 		res.Data[i] = &protousers.ResponseUserQP{
-			Id:             u.ID,
-			FirstName:      u.FirstName,
-			LastName:       u.LastName,
-			DocumentNumber: u.DocumentNumber,
-			Email:          u.Email,
-			PhoneNumber:    u.PhoneNumber,
-			GDEUser:        u.GDEUser,
-			Position:       u.Position,
-			Querypoint: &protousers.ResponseQueryPoint{
+			Querypoints: make([]*protousers.ResponseQueryPoint, len(querypointsIDs.QueryPointsIDs)),
+		}
+
+		for indexQP, qpID := range querypointsIDs.QueryPointsIDs {
+
+			err = stream.Send(&protoqp.RequestQueryPointID{Id: qpID})
+			if err != nil {
+				log.Error(err)
+				return status.Error(codes.Internal, err.Error())
+			}
+			rsp, err := stream.Recv()
+			if err != nil {
+				log.Error(err)
+				return status.Error(codes.Internal, err.Error())
+			}
+
+			res.Data[i].Querypoints[indexQP] = &protousers.ResponseQueryPoint{
 				Id:         rsp.Id,
 				Name:       rsp.Name,
 				Address:    rsp.District,
 				Department: rsp.Department,
-			},
-			CreatedAt:  u.CreatedAt,
-			ModifiedAt: u.ModifiedAt,
-			DeletedAt:  u.DeletedAt,
+			}
+		}
+		if err := stream.Close(); err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
 		}
 
-	}
-	if err := stream.Close(); err != nil {
-		log.Error(err)
-		return status.Error(codes.Internal, err.Error())
+		res.Data[i].Id = u.ID
+		res.Data[i].FirstName = u.FirstName
+		res.Data[i].LastName = u.LastName
+		res.Data[i].DocumentNumber = u.DocumentNumber
+		res.Data[i].Email = u.Email
+		res.Data[i].PhoneNumber = u.PhoneNumber
+		res.Data[i].GDEUser = u.GDEUser
+		res.Data[i].Position = u.Position
+		res.Data[i].CreatedAt = u.CreatedAt
+		res.Data[i].ModifiedAt = u.ModifiedAt
+		res.Data[i].DeletedAt = u.DeletedAt
+
 	}
 
 	return nil

@@ -89,7 +89,7 @@ message ResponseUserQP {
 	string GDEUser = 7;
 	string position = 8;
 
-	ResponseQueryPoint querypoint = 10;
+	repeated ResponseQueryPoint querypoints = 10;
 
 	int64 createdAt = 11;
 	int64 modifiedAt = 12;

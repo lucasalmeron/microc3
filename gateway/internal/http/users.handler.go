@@ -3,6 +3,7 @@ package httphandler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -149,7 +150,7 @@ func (h UsersHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	response, err := userClient.GetPaginatedUsers(context.TODO(), &protousers.RequestPageOptions{
+	response, err := userClient.GetPaginatedWithQP(context.TODO(), &protousers.RequestPageOptions{
 		PageNumber:      pageOptions.PageNumber,
 		RegistersNumber: pageOptions.RegistersNumber,
 		OrderBy: &protousers.RequestPageOptions_Filter{
@@ -158,6 +159,7 @@ func (h UsersHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
 		},
 		Filters: filters,
 	})
+	fmt.Println(response)
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
