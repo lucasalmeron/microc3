@@ -68,7 +68,7 @@ message ResponseAuthWithQueryPoint {
 	string id = 1;
 	string user = 2;
 	bool admin = 3;
-	repeated string queryPoint = 4;
+	repeated string queryPointsIDs = 4;
 }
 
 message RequestCreateAuth {

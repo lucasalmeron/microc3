@@ -253,7 +253,7 @@ func (e *AuthHandler) GetQueryPointsByUserID(ctx context.Context, req *protoauth
 	res.Id = foundAuth.ID
 	res.User = foundAuth.User
 	res.Admin = foundAuth.Admin
-	res.QueryPoint = queryPoints
+	res.QueryPointsIDs = queryPoints
 	return nil
 }
 
