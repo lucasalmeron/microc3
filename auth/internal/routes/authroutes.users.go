@@ -38,13 +38,13 @@ func LoadUsersRoutes() {
 		},
 		{
 			ID:          uuid.New().String(),
-			Path:        "/api/users/create",
+			Path:        "/api/users",
 			Method:      http.MethodPost,
 			Permissions: []string{},
 		},
 		{
 			ID:          uuid.New().String(),
-			Path:        "/api/users/update",
+			Path:        "/api/users",
 			Method:      http.MethodPut,
 			Permissions: []string{},
 		},

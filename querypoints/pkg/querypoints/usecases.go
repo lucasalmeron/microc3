@@ -26,6 +26,10 @@ func (queryPoint *QueryPoint) GetbyID(queryPointID string) (*QueryPoint, error) 
 	return repository.GetByID(context.TODO(), queryPointID)
 }
 
+func (queryPoint *QueryPoint) GetbyName(queryString string) (*QueryPoint, error) {
+	return repository.GetByName(context.TODO(), queryString)
+}
+
 func (queryPoint *QueryPoint) GetPaginated(pageOptions *user.PageOptions) (*Page, error) {
 	return repository.GetPaginated(context.TODO(), pageOptions)
 }

@@ -46,6 +46,7 @@ type QueryPointsService interface {
 	GetPaginated(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error)
 	GetList(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseQueryPointsArray, error)
 	GetByID(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error)
+	GetByName(ctx context.Context, in *RequestQueryPointQuery, opts ...client.CallOption) (*ResponseQueryPoint, error)
 	GetByIDs(ctx context.Context, opts ...client.CallOption) (QueryPoints_GetByIDsService, error)
 	Create(ctx context.Context, in *RequestCreateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error)
 	Update(ctx context.Context, in *RequestUpdateQueryPoint, opts ...client.CallOption) (*ResponseQueryPoint, error)
@@ -86,6 +87,16 @@ func (c *queryPointsService) GetList(ctx context.Context, in *empty.Empty, opts 
 
 func (c *queryPointsService) GetByID(ctx context.Context, in *RequestQueryPointID, opts ...client.CallOption) (*ResponseQueryPoint, error) {
 	req := c.c.NewRequest(c.name, "QueryPoints.GetByID", in)
+	out := new(ResponseQueryPoint)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryPointsService) GetByName(ctx context.Context, in *RequestQueryPointQuery, opts ...client.CallOption) (*ResponseQueryPoint, error) {
+	req := c.c.NewRequest(c.name, "QueryPoints.GetByName", in)
 	out := new(ResponseQueryPoint)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -181,6 +192,7 @@ type QueryPointsHandler interface {
 	GetPaginated(context.Context, *RequestPageOptions, *ResponsePage) error
 	GetList(context.Context, *empty.Empty, *ResponseQueryPointsArray) error
 	GetByID(context.Context, *RequestQueryPointID, *ResponseQueryPoint) error
+	GetByName(context.Context, *RequestQueryPointQuery, *ResponseQueryPoint) error
 	GetByIDs(context.Context, QueryPoints_GetByIDsStream) error
 	Create(context.Context, *RequestCreateQueryPoint, *ResponseQueryPoint) error
 	Update(context.Context, *RequestUpdateQueryPoint, *ResponseQueryPoint) error
@@ -192,6 +204,7 @@ func RegisterQueryPointsHandler(s server.Server, hdlr QueryPointsHandler, opts .
 		GetPaginated(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error
 		GetList(ctx context.Context, in *empty.Empty, out *ResponseQueryPointsArray) error
 		GetByID(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error
+		GetByName(ctx context.Context, in *RequestQueryPointQuery, out *ResponseQueryPoint) error
 		GetByIDs(ctx context.Context, stream server.Stream) error
 		Create(ctx context.Context, in *RequestCreateQueryPoint, out *ResponseQueryPoint) error
 		Update(ctx context.Context, in *RequestUpdateQueryPoint, out *ResponseQueryPoint) error
@@ -218,6 +231,10 @@ func (h *queryPointsHandler) GetList(ctx context.Context, in *empty.Empty, out *
 
 func (h *queryPointsHandler) GetByID(ctx context.Context, in *RequestQueryPointID, out *ResponseQueryPoint) error {
 	return h.QueryPointsHandler.GetByID(ctx, in, out)
+}
+
+func (h *queryPointsHandler) GetByName(ctx context.Context, in *RequestQueryPointQuery, out *ResponseQueryPoint) error {
+	return h.QueryPointsHandler.GetByName(ctx, in, out)
 }
 
 func (h *queryPointsHandler) GetByIDs(ctx context.Context, stream server.Stream) error {

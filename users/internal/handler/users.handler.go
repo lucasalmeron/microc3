@@ -163,7 +163,7 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 }
 
 func (e *UsersHandler) GetPaginatedWithQP(ctx context.Context, req *protousers.RequestPageOptions, res *protousers.ResponsePageWQP) error {
-	log.Info("Received Users.GetPaginatedUsers request")
+	log.Info("Received Users.GetPaginatedWithQP request")
 	pageOptions := new(user.PageOptions)
 	pageOptions.PageNumber = req.PageNumber
 	pageOptions.RegistersNumber = req.RegistersNumber
@@ -212,30 +212,31 @@ func (e *UsersHandler) GetPaginatedWithQP(ctx context.Context, req *protousers.R
 		res.Data[i] = &protousers.ResponseUserQP{
 			Querypoints: make([]*protousers.ResponseQueryPoint, len(querypointsIDs.QueryPointsIDs)),
 		}
+		if len(querypointsIDs.QueryPointsIDs) > 0 {
+			for indexQP, qpID := range querypointsIDs.QueryPointsIDs {
 
-		for indexQP, qpID := range querypointsIDs.QueryPointsIDs {
+				err = stream.Send(&protoqp.RequestQueryPointID{Id: qpID})
+				if err != nil {
+					log.Error(err)
+					return status.Error(codes.Internal, err.Error())
+				}
+				rsp, err := stream.Recv()
+				if err != nil {
+					log.Error(err)
+					return status.Error(codes.Internal, err.Error())
+				}
 
-			err = stream.Send(&protoqp.RequestQueryPointID{Id: qpID})
-			if err != nil {
+				res.Data[i].Querypoints[indexQP] = &protousers.ResponseQueryPoint{
+					Id:         rsp.Id,
+					Name:       rsp.Name,
+					Address:    rsp.District,
+					Department: rsp.Department,
+				}
+			}
+			if err := stream.Close(); err != nil {
 				log.Error(err)
 				return status.Error(codes.Internal, err.Error())
 			}
-			rsp, err := stream.Recv()
-			if err != nil {
-				log.Error(err)
-				return status.Error(codes.Internal, err.Error())
-			}
-
-			res.Data[i].Querypoints[indexQP] = &protousers.ResponseQueryPoint{
-				Id:         rsp.Id,
-				Name:       rsp.Name,
-				Address:    rsp.District,
-				Department: rsp.Department,
-			}
-		}
-		if err := stream.Close(); err != nil {
-			log.Error(err)
-			return status.Error(codes.Internal, err.Error())
 		}
 
 		res.Data[i].Id = u.ID

@@ -72,6 +72,22 @@ func (service *QueryPointService) GetByID(ctx context.Context, queryPointID stri
 	return &queryPoint, nil
 }
 
+func (service *QueryPointService) GetByName(ctx context.Context, queryString string) (*querypoint.QueryPoint, error) {
+
+	var queryPoint querypoint.QueryPoint
+	err := service.collection.FindOne(ctx, bson.D{{"deletedAt", nil}, {"name", bson.D{{"$regex", queryString}, {"$options", "i"}}}}).Decode(&queryPoint)
+
+	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return &queryPoint, nil
+		}
+		log.Println(err)
+		return nil, err
+	}
+
+	return &queryPoint, nil
+}
+
 func (service *QueryPointService) GetPaginated(ctx context.Context, pageOptions *user.PageOptions) (*querypoint.Page, error) {
 
 	queryMap := make(map[string]primitive.A)

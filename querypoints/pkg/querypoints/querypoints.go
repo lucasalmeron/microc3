@@ -25,6 +25,7 @@ type QueryPoint struct {
 type Repository interface {
 	GetList(ctx context.Context) ([]QueryPoint, error)
 	GetByID(ctx context.Context, queryPointID string) (*QueryPoint, error)
+	GetByName(ctx context.Context, queryString string) (*QueryPoint, error)
 	GetPaginated(ctx context.Context, pageOpt *user.PageOptions) (*Page, error)
 	Create(ctx context.Context, queryPoint QueryPoint) (*QueryPoint, error)
 	Update(ctx context.Context, queryPoint QueryPoint) (*QueryPoint, error)

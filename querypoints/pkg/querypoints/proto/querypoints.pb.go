@@ -73,6 +73,53 @@ func (x *RequestQueryPointID) GetId() string {
 	return ""
 }
 
+type RequestQueryPointQuery struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+}
+
+func (x *RequestQueryPointQuery) Reset() {
+	*x = RequestQueryPointQuery{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RequestQueryPointQuery) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestQueryPointQuery) ProtoMessage() {}
+
+func (x *RequestQueryPointQuery) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestQueryPointQuery.ProtoReflect.Descriptor instead.
+func (*RequestQueryPointQuery) Descriptor() ([]byte, []int) {
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RequestQueryPointQuery) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
 type ResponseQueryPointsArray struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -84,7 +131,7 @@ type ResponseQueryPointsArray struct {
 func (x *ResponseQueryPointsArray) Reset() {
 	*x = ResponseQueryPointsArray{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[1]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -97,7 +144,7 @@ func (x *ResponseQueryPointsArray) String() string {
 func (*ResponseQueryPointsArray) ProtoMessage() {}
 
 func (x *ResponseQueryPointsArray) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[1]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,7 +157,7 @@ func (x *ResponseQueryPointsArray) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseQueryPointsArray.ProtoReflect.Descriptor instead.
 func (*ResponseQueryPointsArray) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{1}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ResponseQueryPointsArray) GetQueryPoints() []*ResponseQueryPoint {
@@ -134,7 +181,7 @@ type RequestPageOptions struct {
 func (x *RequestPageOptions) Reset() {
 	*x = RequestPageOptions{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[2]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -147,7 +194,7 @@ func (x *RequestPageOptions) String() string {
 func (*RequestPageOptions) ProtoMessage() {}
 
 func (x *RequestPageOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[2]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -160,7 +207,7 @@ func (x *RequestPageOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestPageOptions.ProtoReflect.Descriptor instead.
 func (*RequestPageOptions) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{2}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RequestPageOptions) GetPageNumber() int64 {
@@ -205,7 +252,7 @@ type ResponsePage struct {
 func (x *ResponsePage) Reset() {
 	*x = ResponsePage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[3]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -218,7 +265,7 @@ func (x *ResponsePage) String() string {
 func (*ResponsePage) ProtoMessage() {}
 
 func (x *ResponsePage) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[3]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -231,7 +278,7 @@ func (x *ResponsePage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponsePage.ProtoReflect.Descriptor instead.
 func (*ResponsePage) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{3}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ResponsePage) GetLength() int64 {
@@ -282,7 +329,7 @@ type ResponseQueryPoint struct {
 func (x *ResponseQueryPoint) Reset() {
 	*x = ResponseQueryPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[4]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -295,7 +342,7 @@ func (x *ResponseQueryPoint) String() string {
 func (*ResponseQueryPoint) ProtoMessage() {}
 
 func (x *ResponseQueryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[4]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +355,7 @@ func (x *ResponseQueryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseQueryPoint.ProtoReflect.Descriptor instead.
 func (*ResponseQueryPoint) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{4}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ResponseQueryPoint) GetId() string {
@@ -397,7 +444,7 @@ type RequestCreateQueryPoint struct {
 func (x *RequestCreateQueryPoint) Reset() {
 	*x = RequestCreateQueryPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[5]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -410,7 +457,7 @@ func (x *RequestCreateQueryPoint) String() string {
 func (*RequestCreateQueryPoint) ProtoMessage() {}
 
 func (x *RequestCreateQueryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[5]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +470,7 @@ func (x *RequestCreateQueryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestCreateQueryPoint.ProtoReflect.Descriptor instead.
 func (*RequestCreateQueryPoint) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{5}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RequestCreateQueryPoint) GetName() string {
@@ -485,7 +532,7 @@ type RequestUpdateQueryPoint struct {
 func (x *RequestUpdateQueryPoint) Reset() {
 	*x = RequestUpdateQueryPoint{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[6]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -498,7 +545,7 @@ func (x *RequestUpdateQueryPoint) String() string {
 func (*RequestUpdateQueryPoint) ProtoMessage() {}
 
 func (x *RequestUpdateQueryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[6]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +558,7 @@ func (x *RequestUpdateQueryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestUpdateQueryPoint.ProtoReflect.Descriptor instead.
 func (*RequestUpdateQueryPoint) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{6}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *RequestUpdateQueryPoint) GetId() string {
@@ -575,7 +622,7 @@ type RequestPageOptions_Filter struct {
 func (x *RequestPageOptions_Filter) Reset() {
 	*x = RequestPageOptions_Filter{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[7]
+		mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -588,7 +635,7 @@ func (x *RequestPageOptions_Filter) String() string {
 func (*RequestPageOptions_Filter) ProtoMessage() {}
 
 func (x *RequestPageOptions_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[7]
+	mi := &file_pkg_querypoints_proto_querypoints_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -601,7 +648,7 @@ func (x *RequestPageOptions_Filter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestPageOptions_Filter.ProtoReflect.Descriptor instead.
 func (*RequestPageOptions_Filter) Descriptor() ([]byte, []int) {
-	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{2, 0}
+	return file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *RequestPageOptions_Filter) GetField() string {
@@ -629,7 +676,10 @@ var file_pkg_querypoints_proto_querypoints_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x25, 0x0a, 0x13, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51,
 	0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x49, 0x44, 0x12, 0x0e, 0x0a, 0x02, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x6e, 0x0a, 0x18, 0x52,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x2e, 0x0a, 0x16, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x22, 0x6e, 0x0a, 0x18, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e,
 	0x74, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79, 0x12, 0x52, 0x0a, 0x0b, 0x71, 0x75, 0x65, 0x72, 0x79,
 	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x67,
@@ -709,7 +759,7 @@ var file_pkg_querypoints_proto_querypoints_proto_rawDesc = []byte{
 	0x64, 0x65, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x0a, 0x64, 0x65, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07,
 	0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x61,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0x9e, 0x06, 0x0a, 0x0b, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0x95, 0x07, 0x0a, 0x0b, 0x51, 0x75, 0x65, 0x72, 0x79,
 	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x6e, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x50, 0x61, 0x67,
 	0x69, 0x6e, 0x61, 0x74, 0x65, 0x64, 0x12, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72,
 	0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70,
@@ -730,36 +780,44 @@ var file_pkg_querypoints_proto_querypoints_proto_rawDesc = []byte{
 	0x44, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72,
 	0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73,
 	0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f,
-	0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x75, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x42, 0x79, 0x49, 0x44,
-	0x73, 0x12, 0x31, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73,
-	0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69,
-	0x6e, 0x74, 0x49, 0x44, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e,
+	0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x75, 0x0a, 0x09, 0x47, 0x65, 0x74, 0x42, 0x79, 0x4e, 0x61,
+	0x6d, 0x65, 0x12, 0x34, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74,
+	0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f,
+	0x69, 0x6e, 0x74, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69,
+	0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
+	0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x75, 0x0a, 0x08,
+	0x47, 0x65, 0x74, 0x42, 0x79, 0x49, 0x44, 0x73, 0x12, 0x31, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69,
+	0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
+	0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x49, 0x44, 0x1a, 0x30, 0x2e, 0x67, 0x6f,
+	0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x28,
+	0x01, 0x30, 0x01, 0x12, 0x73, 0x0a, 0x06, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x35, 0x2e,
+	0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
+	0x6f, 0x69, 0x6e, 0x74, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e,
 	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69,
 	0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x12, 0x73, 0x0a, 0x06,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x35, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72,
-	0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70,
-	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x1a, 0x30, 0x2e,
-	0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
-	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22,
-	0x00, 0x12, 0x73, 0x0a, 0x06, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x35, 0x2e, 0x67, 0x6f,
-	0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69,
-	0x6e, 0x74, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65,
+	0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x73, 0x0a, 0x06, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x12, 0x35, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74,
-	0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
-	0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x6f, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x12, 0x31, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e,
-	0x74, 0x49, 0x44, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e, 0x6d,
+	0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x6f, 0x0a,
+	0x06, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x31, 0x2e, 0x67, 0x6f, 0x2e, 0x6d, 0x69, 0x63,
+	0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
+	0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x49, 0x44, 0x1a, 0x30, 0x2e, 0x67, 0x6f, 0x2e,
+	0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x71, 0x75,
+	0x65, 0x72, 0x79, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x22, 0x00, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -774,39 +832,42 @@ func file_pkg_querypoints_proto_querypoints_proto_rawDescGZIP() []byte {
 	return file_pkg_querypoints_proto_querypoints_proto_rawDescData
 }
 
-var file_pkg_querypoints_proto_querypoints_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_pkg_querypoints_proto_querypoints_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_pkg_querypoints_proto_querypoints_proto_goTypes = []interface{}{
 	(*RequestQueryPointID)(nil),       // 0: go.micro.service.querypoints.RequestQueryPointID
-	(*ResponseQueryPointsArray)(nil),  // 1: go.micro.service.querypoints.ResponseQueryPointsArray
-	(*RequestPageOptions)(nil),        // 2: go.micro.service.querypoints.RequestPageOptions
-	(*ResponsePage)(nil),              // 3: go.micro.service.querypoints.ResponsePage
-	(*ResponseQueryPoint)(nil),        // 4: go.micro.service.querypoints.ResponseQueryPoint
-	(*RequestCreateQueryPoint)(nil),   // 5: go.micro.service.querypoints.RequestCreateQueryPoint
-	(*RequestUpdateQueryPoint)(nil),   // 6: go.micro.service.querypoints.RequestUpdateQueryPoint
-	(*RequestPageOptions_Filter)(nil), // 7: go.micro.service.querypoints.RequestPageOptions.Filter
-	(*empty.Empty)(nil),               // 8: google.protobuf.Empty
+	(*RequestQueryPointQuery)(nil),    // 1: go.micro.service.querypoints.RequestQueryPointQuery
+	(*ResponseQueryPointsArray)(nil),  // 2: go.micro.service.querypoints.ResponseQueryPointsArray
+	(*RequestPageOptions)(nil),        // 3: go.micro.service.querypoints.RequestPageOptions
+	(*ResponsePage)(nil),              // 4: go.micro.service.querypoints.ResponsePage
+	(*ResponseQueryPoint)(nil),        // 5: go.micro.service.querypoints.ResponseQueryPoint
+	(*RequestCreateQueryPoint)(nil),   // 6: go.micro.service.querypoints.RequestCreateQueryPoint
+	(*RequestUpdateQueryPoint)(nil),   // 7: go.micro.service.querypoints.RequestUpdateQueryPoint
+	(*RequestPageOptions_Filter)(nil), // 8: go.micro.service.querypoints.RequestPageOptions.Filter
+	(*empty.Empty)(nil),               // 9: google.protobuf.Empty
 }
 var file_pkg_querypoints_proto_querypoints_proto_depIdxs = []int32{
-	4,  // 0: go.micro.service.querypoints.ResponseQueryPointsArray.queryPoints:type_name -> go.micro.service.querypoints.ResponseQueryPoint
-	7,  // 1: go.micro.service.querypoints.RequestPageOptions.orderBy:type_name -> go.micro.service.querypoints.RequestPageOptions.Filter
-	7,  // 2: go.micro.service.querypoints.RequestPageOptions.filters:type_name -> go.micro.service.querypoints.RequestPageOptions.Filter
-	4,  // 3: go.micro.service.querypoints.ResponsePage.data:type_name -> go.micro.service.querypoints.ResponseQueryPoint
-	2,  // 4: go.micro.service.querypoints.QueryPoints.GetPaginated:input_type -> go.micro.service.querypoints.RequestPageOptions
-	8,  // 5: go.micro.service.querypoints.QueryPoints.GetList:input_type -> google.protobuf.Empty
+	5,  // 0: go.micro.service.querypoints.ResponseQueryPointsArray.queryPoints:type_name -> go.micro.service.querypoints.ResponseQueryPoint
+	8,  // 1: go.micro.service.querypoints.RequestPageOptions.orderBy:type_name -> go.micro.service.querypoints.RequestPageOptions.Filter
+	8,  // 2: go.micro.service.querypoints.RequestPageOptions.filters:type_name -> go.micro.service.querypoints.RequestPageOptions.Filter
+	5,  // 3: go.micro.service.querypoints.ResponsePage.data:type_name -> go.micro.service.querypoints.ResponseQueryPoint
+	3,  // 4: go.micro.service.querypoints.QueryPoints.GetPaginated:input_type -> go.micro.service.querypoints.RequestPageOptions
+	9,  // 5: go.micro.service.querypoints.QueryPoints.GetList:input_type -> google.protobuf.Empty
 	0,  // 6: go.micro.service.querypoints.QueryPoints.GetByID:input_type -> go.micro.service.querypoints.RequestQueryPointID
-	0,  // 7: go.micro.service.querypoints.QueryPoints.GetByIDs:input_type -> go.micro.service.querypoints.RequestQueryPointID
-	5,  // 8: go.micro.service.querypoints.QueryPoints.Create:input_type -> go.micro.service.querypoints.RequestCreateQueryPoint
-	6,  // 9: go.micro.service.querypoints.QueryPoints.Update:input_type -> go.micro.service.querypoints.RequestUpdateQueryPoint
-	0,  // 10: go.micro.service.querypoints.QueryPoints.Delete:input_type -> go.micro.service.querypoints.RequestQueryPointID
-	3,  // 11: go.micro.service.querypoints.QueryPoints.GetPaginated:output_type -> go.micro.service.querypoints.ResponsePage
-	1,  // 12: go.micro.service.querypoints.QueryPoints.GetList:output_type -> go.micro.service.querypoints.ResponseQueryPointsArray
-	4,  // 13: go.micro.service.querypoints.QueryPoints.GetByID:output_type -> go.micro.service.querypoints.ResponseQueryPoint
-	4,  // 14: go.micro.service.querypoints.QueryPoints.GetByIDs:output_type -> go.micro.service.querypoints.ResponseQueryPoint
-	4,  // 15: go.micro.service.querypoints.QueryPoints.Create:output_type -> go.micro.service.querypoints.ResponseQueryPoint
-	4,  // 16: go.micro.service.querypoints.QueryPoints.Update:output_type -> go.micro.service.querypoints.ResponseQueryPoint
-	4,  // 17: go.micro.service.querypoints.QueryPoints.Delete:output_type -> go.micro.service.querypoints.ResponseQueryPoint
-	11, // [11:18] is the sub-list for method output_type
-	4,  // [4:11] is the sub-list for method input_type
+	1,  // 7: go.micro.service.querypoints.QueryPoints.GetByName:input_type -> go.micro.service.querypoints.RequestQueryPointQuery
+	0,  // 8: go.micro.service.querypoints.QueryPoints.GetByIDs:input_type -> go.micro.service.querypoints.RequestQueryPointID
+	6,  // 9: go.micro.service.querypoints.QueryPoints.Create:input_type -> go.micro.service.querypoints.RequestCreateQueryPoint
+	7,  // 10: go.micro.service.querypoints.QueryPoints.Update:input_type -> go.micro.service.querypoints.RequestUpdateQueryPoint
+	0,  // 11: go.micro.service.querypoints.QueryPoints.Delete:input_type -> go.micro.service.querypoints.RequestQueryPointID
+	4,  // 12: go.micro.service.querypoints.QueryPoints.GetPaginated:output_type -> go.micro.service.querypoints.ResponsePage
+	2,  // 13: go.micro.service.querypoints.QueryPoints.GetList:output_type -> go.micro.service.querypoints.ResponseQueryPointsArray
+	5,  // 14: go.micro.service.querypoints.QueryPoints.GetByID:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	5,  // 15: go.micro.service.querypoints.QueryPoints.GetByName:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	5,  // 16: go.micro.service.querypoints.QueryPoints.GetByIDs:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	5,  // 17: go.micro.service.querypoints.QueryPoints.Create:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	5,  // 18: go.micro.service.querypoints.QueryPoints.Update:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	5,  // 19: go.micro.service.querypoints.QueryPoints.Delete:output_type -> go.micro.service.querypoints.ResponseQueryPoint
+	12, // [12:20] is the sub-list for method output_type
+	4,  // [4:12] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -831,7 +892,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResponseQueryPointsArray); i {
+			switch v := v.(*RequestQueryPointQuery); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -843,7 +904,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RequestPageOptions); i {
+			switch v := v.(*ResponseQueryPointsArray); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -855,7 +916,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResponsePage); i {
+			switch v := v.(*RequestPageOptions); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -867,7 +928,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResponseQueryPoint); i {
+			switch v := v.(*ResponsePage); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -879,7 +940,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RequestCreateQueryPoint); i {
+			switch v := v.(*ResponseQueryPoint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -891,7 +952,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RequestUpdateQueryPoint); i {
+			switch v := v.(*RequestCreateQueryPoint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -903,6 +964,18 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			}
 		}
 		file_pkg_querypoints_proto_querypoints_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RequestUpdateQueryPoint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_querypoints_proto_querypoints_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*RequestPageOptions_Filter); i {
 			case 0:
 				return &v.state
@@ -921,7 +994,7 @@ func file_pkg_querypoints_proto_querypoints_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pkg_querypoints_proto_querypoints_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

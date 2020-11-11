@@ -90,8 +90,32 @@ func (e *QueryPointsHandler) GetByID(ctx context.Context, req *protoqp.RequestQu
 	return nil
 }
 
+func (e *QueryPointsHandler) GetByName(ctx context.Context, req *protoqp.RequestQueryPointQuery, res *protoqp.ResponseQueryPoint) error {
+	log.Info("Received QueryPoints.GetByName request")
+	reqQueryPoint := new(querypoint.QueryPoint)
+	foundQueryPoint, err := reqQueryPoint.GetbyName(req.Query)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE+
+	res.Id = foundQueryPoint.ID
+	res.Name = foundQueryPoint.Name
+	res.Phone = foundQueryPoint.Phone
+	res.Address = foundQueryPoint.Address
+	res.District = foundQueryPoint.District
+	res.Department = foundQueryPoint.Department
+	res.Actions = foundQueryPoint.Actions
+	res.CreatedAt = foundQueryPoint.CreatedAt
+	res.ModifiedAt = foundQueryPoint.ModifiedAt
+	res.DeletedAt = foundQueryPoint.DeletedAt
+
+	return nil
+}
+
 func (e *QueryPointsHandler) GetByIDs(ctx context.Context, stream protoqp.QueryPoints_GetByIDsStream) error {
-	log.Info("Received QueryPoints.GetByID request")
+	log.Info("Received QueryPoints.GetByIDs request")
 	reqQueryPoint := new(querypoint.QueryPoint)
 
 	for {

@@ -11,6 +11,6 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e
 	github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e
-	github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e
+	github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046
 	github.com/micro/go-micro/v2 v2.9.1
 )

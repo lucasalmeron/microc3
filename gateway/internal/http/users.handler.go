@@ -38,8 +38,8 @@ func InitUserHandler(router *mux.Router) {
 
 	router.Path("/users/login").HandlerFunc(handler.LogIn).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/paginated").HandlerFunc(handler.GetPaginated).Methods(http.MethodPost, http.MethodOptions)
-	router.Path("/users/create").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
-	router.Path("/users/update").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
+	router.Path("/users").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
+	router.Path("/users").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
 
 	router.Path("/users/pushpermission").HandlerFunc(handler.PushPermission).Methods(http.MethodPut, http.MethodOptions)
 	router.Path("/users/deletepermission").HandlerFunc(handler.DeletePermission).Methods(http.MethodPut, http.MethodOptions)
