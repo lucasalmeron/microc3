@@ -31,6 +31,7 @@ func InitQueryPointsHandler(router *mux.Router) {
 
 	router.Path("/querypoints/list").HandlerFunc(handler.GetList).Methods(http.MethodGet, http.MethodOptions)
 	router.Path("/querypoints/id/{queryPointID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetByID).Methods(http.MethodGet, http.MethodOptions)
+	router.Path("/querypoints/name/{name}").HandlerFunc(handler.GetByName).Methods(http.MethodGet, http.MethodOptions)
 
 	router.Path("/querypoints/paginated").HandlerFunc(handler.GetPaginated).Methods(http.MethodPost, http.MethodOptions)
 
@@ -67,6 +68,23 @@ func (h QueryPointsHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func (h QueryPointsHandler) GetByName(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	/*name := mux.Vars(r)["name"]
+
+	response, err := queryPointsClient.GetByName(context.TODO(), &protoqp.RequestQueryPointQuery{
+
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+	json.NewEncoder(w).Encode(response)*/
 }
 
 func (h QueryPointsHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {
