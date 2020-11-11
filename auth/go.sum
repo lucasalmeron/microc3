@@ -300,12 +300,17 @@ github.com/liquidweb/liquidweb-go v1.6.0/go.mod h1:UDcVnAMDkZxpw4Y7NOHkqoeiGacVL
 github.com/lucas-clemente/quic-go v0.14.1 h1:c1aKoBZKOPA+49q96B1wGkibyPP0AxYh45WuAoq+87E=
 github.com/lucas-clemente/quic-go v0.14.1/go.mod h1:Vn3/Fb0/77b02SGhQk36KzOUmXgVpFfizUfW5WMaqyU=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201029162505-cf8b84ac2f10/go.mod h1:VdKy1wx/J33ZHUSzY36KwPTBUicjXvwF/k9aDp6Otts=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201111161033-c2ee06597534/go.mod h1:5iStXcZcCCoPx8SZxp5MJRpxVVNJPlvYvectzAOte88=
+github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111161033-c2ee06597534/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
+github.com/lucasalmeron/microc3/users v0.0.0-20200923231205-cdef43fcb4be/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
 github.com/lucasalmeron/microc3/users v0.0.0-20200929182354-b61502e5f9f4 h1:NqVjqJ7YAQLPNByBQji2ki4t9f8LnLfmroPveqt8V68=
 github.com/lucasalmeron/microc3/users v0.0.0-20200929182354-b61502e5f9f4/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5 h1:agE5Xcr/UDLAae2SFKRyBnhXgr1s5HzOg9sJO9EV9ts=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
 github.com/lucasalmeron/microc3/users v0.0.0-20201029213517-44d0822db567 h1:as3Zg09KnUxw8pRQBoALlIFWiv/sJ3DFxMlJrZGnPNc=
 github.com/lucasalmeron/microc3/users v0.0.0-20201029213517-44d0822db567/go.mod h1:KtAO5LuUg/eWgYuRfs9vUZExwPyLIkdoEM/giXvsFFY=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e h1:2cPSBRckctJC1WUEjwKEC9c95XXEb7xMoi44C7hSMug=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e/go.mod h1:zNgXcY9INaBb2lc7x5lfBRfwi81JaiBXDpBwqrVVdYE=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/marten-seemann/chacha20 v0.2.0 h1:f40vqzzx+3GdOmzQoItkLX5WLvHgPgyYqFFIO5Gh4hQ=
