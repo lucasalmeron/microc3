@@ -299,6 +299,8 @@ github.com/lucasalmeron/microc3/auth v0.0.0-20201102234245-b1986d0b8145/go.mod h
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111161033-c2ee06597534/go.mod h1:5iStXcZcCCoPx8SZxp5MJRpxVVNJPlvYvectzAOte88=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e h1:uj7xJGaqQDJ17t7QbFHsQ/PcoVzas4cZqXvcDE0A1NY=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e/go.mod h1:5iStXcZcCCoPx8SZxp5MJRpxVVNJPlvYvectzAOte88=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68 h1:VyP4+uULxKgCF15ZFL6DCrOHWrKOrnoaDTVfWjFVFXc=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68/go.mod h1:/zsjmbIgaJPpiDRcziG6tuQ8cic9MFYh8zN9Ao2/7N0=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201103142204-8bb6965c846f/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111161033-c2ee06597534/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e h1:n8ZmgbOlnBea98wiqxCJzOmIMxCvvpPSef7/AGi89SY=
@@ -315,6 +317,8 @@ github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e h1:2cPS
 github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e/go.mod h1:zNgXcY9INaBb2lc7x5lfBRfwi81JaiBXDpBwqrVVdYE=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046 h1:Oqd13WPpntLB+veaRMv/K48+gPWL+WWSGL9O1BHRwSo=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046/go.mod h1:Ag0OtQMX+Enpm582gXQLirp2oT1zv6LZcsJu4qfHWrk=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68 h1:9t4HXbPEHlu63P2+hmnUe/ccQKPZoTENPp9gLhAM/AE=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68/go.mod h1:Ag0OtQMX+Enpm582gXQLirp2oT1zv6LZcsJu4qfHWrk=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/marten-seemann/chacha20 v0.2.0/go.mod h1:HSdjFau7GzYRj+ahFNwsO3ouVJr1HFkWoEwNDb4TMtE=

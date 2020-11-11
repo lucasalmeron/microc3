@@ -9,8 +9,8 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 require (
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.3
-	github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e
+	github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68
 	github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111180840-439ebebfaa68
-	github.com/lucasalmeron/microc3/users v0.0.0-20201111174618-faed42a0f046
+	github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68
 	github.com/micro/go-micro/v2 v2.9.1
 )
