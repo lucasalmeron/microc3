@@ -44,6 +44,7 @@ func NewUsersEndpoints() []*api.Endpoint {
 
 type UsersService interface {
 	GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error)
+	GetPaginatedWithQP(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePageWQP, error)
 	GetUsers(ctx context.Context, in *empty.Empty, opts ...client.CallOption) (*ResponseUsersArray, error)
 	GetUserByID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseUser, error)
 	GetUserByEmail(ctx context.Context, in *RequestUserEmail, opts ...client.CallOption) (*ResponseUser, error)
@@ -68,6 +69,16 @@ func NewUsersService(name string, c client.Client) UsersService {
 func (c *usersService) GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePage, error) {
 	req := c.c.NewRequest(c.name, "Users.GetPaginatedUsers", in)
 	out := new(ResponsePage)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersService) GetPaginatedWithQP(ctx context.Context, in *RequestPageOptions, opts ...client.CallOption) (*ResponsePageWQP, error) {
+	req := c.c.NewRequest(c.name, "Users.GetPaginatedWithQP", in)
+	out := new(ResponsePageWQP)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,6 +160,7 @@ func (c *usersService) DeleteUser(ctx context.Context, in *RequestUserID, opts .
 
 type UsersHandler interface {
 	GetPaginatedUsers(context.Context, *RequestPageOptions, *ResponsePage) error
+	GetPaginatedWithQP(context.Context, *RequestPageOptions, *ResponsePageWQP) error
 	GetUsers(context.Context, *empty.Empty, *ResponseUsersArray) error
 	GetUserByID(context.Context, *RequestUserID, *ResponseUser) error
 	GetUserByEmail(context.Context, *RequestUserEmail, *ResponseUser) error
@@ -161,6 +173,7 @@ type UsersHandler interface {
 func RegisterUsersHandler(s server.Server, hdlr UsersHandler, opts ...server.HandlerOption) error {
 	type users interface {
 		GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error
+		GetPaginatedWithQP(ctx context.Context, in *RequestPageOptions, out *ResponsePageWQP) error
 		GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error
 		GetUserByID(ctx context.Context, in *RequestUserID, out *ResponseUser) error
 		GetUserByEmail(ctx context.Context, in *RequestUserEmail, out *ResponseUser) error
@@ -182,6 +195,10 @@ type usersHandler struct {
 
 func (h *usersHandler) GetPaginatedUsers(ctx context.Context, in *RequestPageOptions, out *ResponsePage) error {
 	return h.UsersHandler.GetPaginatedUsers(ctx, in, out)
+}
+
+func (h *usersHandler) GetPaginatedWithQP(ctx context.Context, in *RequestPageOptions, out *ResponsePageWQP) error {
+	return h.UsersHandler.GetPaginatedWithQP(ctx, in, out)
 }
 
 func (h *usersHandler) GetUsers(ctx context.Context, in *empty.Empty, out *ResponseUsersArray) error {

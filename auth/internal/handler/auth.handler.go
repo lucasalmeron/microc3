@@ -225,11 +225,35 @@ func (e *AuthHandler) GetByUserID(ctx context.Context, req *protoauth.RequestUse
 	//RESPONSE+
 	res.Id = foundAuth.ID
 	res.User = foundAuth.User
+	res.Admin = foundAuth.Admin
 	res.Permissions = buildProtoPermission(*foundAuth)
 	res.CreatedAt = foundAuth.CreatedAt
 	res.ModifiedAt = foundAuth.ModifiedAt
 	res.DeletedAt = foundAuth.DeletedAt
 
+	return nil
+}
+
+func (e *AuthHandler) GetQueryPointsByUserID(ctx context.Context, req *protoauth.RequestUserID, res *protoauth.ResponseAuthWithQueryPoint) error {
+	log.Info("Received auth.GetQueryPointsByUserID request")
+	reqAuth := new(auth.Auth)
+	foundAuth, err := reqAuth.GetByUserID(req.User)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+	queryPoints := []string{}
+	for _, p := range foundAuth.Permissions {
+		if qp, ok := p.Access["queryPoint"]; ok {
+			queryPoints = append(queryPoints, fmt.Sprintf("%v", qp))
+		}
+	}
+
+	//RESPONSE+
+	res.Id = foundAuth.ID
+	res.User = foundAuth.User
+	res.Admin = foundAuth.Admin
+	res.QueryPoint = queryPoints
 	return nil
 }
 

@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
+	protoqp "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	user "github.com/lucasalmeron/microc3/users/pkg/users"
@@ -22,6 +23,7 @@ var (
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
 	authClient  protoauth.AuthService
+	qpClient    protoqp.QueryPointsService
 )
 
 func InitEvents(c client.Client) {
@@ -30,6 +32,7 @@ func InitEvents(c client.Client) {
 	pubDeleted = micro.NewEvent("go.micro.users.deleted", c)
 	//create gRPC clients//
 	authClient = protoauth.NewAuthService("go.micro.service.auth", c)
+	qpClient = protoqp.NewQueryPointsService("go.micro.service.querypoints", c)
 }
 
 func buildUserResponse(user user.User) *protousers.ResponseUser {
@@ -154,6 +157,86 @@ func (e *UsersHandler) GetPaginatedUsers(ctx context.Context, req *protousers.Re
 
 	for i, u := range paginatedUsers.Data {
 		res.Data[i] = buildUserResponse(u)
+	}
+
+	return nil
+}
+
+func (e *UsersHandler) GetPaginatedWithQP(ctx context.Context, req *protousers.RequestPageOptions, res *protousers.ResponsePageWQP) error {
+	log.Info("Received Users.GetPaginatedUsers request")
+	pageOptions := new(user.PageOptions)
+	pageOptions.PageNumber = req.PageNumber
+	pageOptions.RegistersNumber = req.RegistersNumber
+	pageOptions.OrderBy.Field = req.OrderBy.Field
+	pageOptions.OrderBy.Value = req.OrderBy.Value
+	for _, filter := range req.Filters {
+		pageOptions.Filters = append(pageOptions.Filters, user.Filter{filter.Field, filter.Value})
+	}
+	err := pageOptions.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	reqUser := new(user.User)
+
+	fmt.Println(pageOptions)
+
+	paginatedUsers, err := reqUser.GetPaginated(pageOptions)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	paginatedUsers.CalcNumberOfPages(pageOptions)
+	//RESPONSE
+	res.Length = paginatedUsers.Length
+	res.Data = make([]*protousers.ResponseUserQP, len(paginatedUsers.Data))
+	res.PageNumber = paginatedUsers.PageNumber
+	res.NumberOfPages = paginatedUsers.NumberOfPages
+
+	//MAKE STREAM
+	stream, err := qpClient.GetByIDs(context.TODO())
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+	for i, u := range paginatedUsers.Data {
+
+		err = stream.Send(&protoqp.RequestQueryPointID{Id: u.Querypoint})
+		if err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
+		}
+		rsp, err := stream.Recv()
+		if err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
+		}
+		res.Data[i] = &protousers.ResponseUserQP{
+			Id:             u.ID,
+			FirstName:      u.FirstName,
+			LastName:       u.LastName,
+			DocumentNumber: u.DocumentNumber,
+			Email:          u.Email,
+			PhoneNumber:    u.PhoneNumber,
+			GDEUser:        u.GDEUser,
+			Position:       u.Position,
+			Querypoint: &protousers.ResponseQueryPoint{
+				Id:         rsp.Id,
+				Name:       rsp.Name,
+				Address:    rsp.District,
+				Department: rsp.Department,
+			},
+			CreatedAt:  u.CreatedAt,
+			ModifiedAt: u.ModifiedAt,
+			DeletedAt:  u.DeletedAt,
+		}
+
+	}
+	if err := stream.Close(); err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
 	}
 
 	return nil

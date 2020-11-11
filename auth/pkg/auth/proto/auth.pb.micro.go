@@ -46,6 +46,7 @@ type AuthService interface {
 	AuthPath(ctx context.Context, in *RequestAuthPath, opts ...client.CallOption) (*ResponseAuthPath, error)
 	GetByID(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
 	GetByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuth, error)
+	GetQueryPointsByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuthWithQueryPoint, error)
 	Create(ctx context.Context, in *RequestCreateAuth, opts ...client.CallOption) (*ResponseAuth, error)
 	Update(ctx context.Context, in *RequestUpdateAuth, opts ...client.CallOption) (*ResponseAuth, error)
 	Delete(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
@@ -98,6 +99,16 @@ func (c *authService) GetByID(ctx context.Context, in *RequestAuthID, opts ...cl
 func (c *authService) GetByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.GetByUserID", in)
 	out := new(ResponseAuth)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) GetQueryPointsByUserID(ctx context.Context, in *RequestUserID, opts ...client.CallOption) (*ResponseAuthWithQueryPoint, error) {
+	req := c.c.NewRequest(c.name, "Auth.GetQueryPointsByUserID", in)
+	out := new(ResponseAuthWithQueryPoint)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -162,6 +173,7 @@ type AuthHandler interface {
 	AuthPath(context.Context, *RequestAuthPath, *ResponseAuthPath) error
 	GetByID(context.Context, *RequestAuthID, *ResponseAuth) error
 	GetByUserID(context.Context, *RequestUserID, *ResponseAuth) error
+	GetQueryPointsByUserID(context.Context, *RequestUserID, *ResponseAuthWithQueryPoint) error
 	Create(context.Context, *RequestCreateAuth, *ResponseAuth) error
 	Update(context.Context, *RequestUpdateAuth, *ResponseAuth) error
 	Delete(context.Context, *RequestAuthID, *ResponseAuth) error
@@ -175,6 +187,7 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		AuthPath(ctx context.Context, in *RequestAuthPath, out *ResponseAuthPath) error
 		GetByID(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
 		GetByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuth) error
+		GetQueryPointsByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuthWithQueryPoint) error
 		Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error
 		Update(ctx context.Context, in *RequestUpdateAuth, out *ResponseAuth) error
 		Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
@@ -206,6 +219,10 @@ func (h *authHandler) GetByID(ctx context.Context, in *RequestAuthID, out *Respo
 
 func (h *authHandler) GetByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuth) error {
 	return h.AuthHandler.GetByUserID(ctx, in, out)
+}
+
+func (h *authHandler) GetQueryPointsByUserID(ctx context.Context, in *RequestUserID, out *ResponseAuthWithQueryPoint) error {
+	return h.AuthHandler.GetQueryPointsByUserID(ctx, in, out)
 }
 
 func (h *authHandler) Create(ctx context.Context, in *RequestCreateAuth, out *ResponseAuth) error {

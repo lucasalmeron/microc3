@@ -6,6 +6,7 @@ package go.micro.service.users;
 
 service Users {
 	rpc GetPaginatedUsers(RequestPageOptions) returns (ResponsePage) {}
+	rpc GetPaginatedWithQP(RequestPageOptions) returns (ResponsePageWQP) {}
 	rpc GetUsers(google.protobuf.Empty) returns (ResponseUsersArray) {}
 	rpc GetUserByID(RequestUserID) returns (ResponseUser) {}
 	rpc GetUserByEmail(RequestUserEmail) returns (ResponseUser) {}
@@ -53,6 +54,13 @@ message ResponsePage {
 	int64 pageNumber = 2;
 	int64 numberOfPages = 3;
 	repeated ResponseUser data = 4;
+}
+
+message ResponsePageWQP {
+	int64 length = 1;
+	int64 pageNumber = 2;
+	int64 numberOfPages = 3;
+	repeated ResponseUserQP data = 4;
 }
 
 

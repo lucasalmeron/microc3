@@ -8,6 +8,7 @@ service Auth {
 	rpc AuthPath(RequestAuthPath) returns (ResponseAuthPath) {}
 	rpc GetByID(RequestAuthID) returns (ResponseAuth) {}
 	rpc GetByUserID(RequestUserID) returns (ResponseAuth) {}
+	rpc GetQueryPointsByUserID(RequestUserID) returns (ResponseAuthWithQueryPoint) {}
 	rpc Create(RequestCreateAuth) returns (ResponseAuth) {}
 	rpc Update(RequestUpdateAuth) returns (ResponseAuth) {}
 	rpc Delete(RequestAuthID) returns (ResponseAuth) {}
@@ -55,12 +56,19 @@ message Permission {
 message ResponseAuth {
 	string id = 1;
 	string user = 2;
-	string admin = 3;
+	bool admin = 3;
 	repeated Permission permissions = 4;
 
 	int64 createdAt = 5;
 	int64 modifiedAt = 6;
 	int64 deletedAt = 7;
+}
+
+message ResponseAuthWithQueryPoint {
+	string id = 1;
+	string user = 2;
+	bool admin = 3;
+	repeated string queryPoint = 4;
 }
 
 message RequestCreateAuth {

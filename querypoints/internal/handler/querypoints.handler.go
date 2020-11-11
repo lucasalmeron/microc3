@@ -97,10 +97,11 @@ func (e *QueryPointsHandler) GetByIDs(ctx context.Context, stream protoqp.QueryP
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			return nil
+			break
 		}
 		if err != nil {
-			return err
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
 		}
 		foundQueryPoint, err := reqQueryPoint.GetbyID(req.Id)
 		if err != nil {
@@ -125,6 +126,7 @@ func (e *QueryPointsHandler) GetByIDs(ctx context.Context, stream protoqp.QueryP
 			return status.Error(codes.Internal, err.Error())
 		}
 	}
+	return nil
 }
 
 func (e *QueryPointsHandler) GetPaginated(ctx context.Context, req *protoqp.RequestPageOptions, res *protoqp.ResponsePage) error {

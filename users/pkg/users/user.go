@@ -16,16 +16,6 @@ type User struct {
 	GDEUser        string `json:"GDEUser" bson:"GDEUser"`
 	Position       string `json:"position" bson:"position"`
 
-	Admin       bool `json:"admin" bson:"admin"`
-	Permissions []struct {
-		Read        bool   `json:"read" bson:"read"`
-		Write       bool   `json:"write" bson:"write"`
-		Responsible bool   `json:"responsible" bson:"responsible"`
-		Query       bool   `json:"query" bson:"query"`
-		Health      bool   `json:"health" bson:"health"`
-		QueryPoint  string `json:"queryPoint" bson:"queryPoint"`
-	} `json:"permissions" bson:"permissions"`
-
 	ModifierUser string `json:"modifierUser" bson:"modifierUser"`
 	CreatedAt    int64  `json:"createdAt" bson:"createdAt"`
 	ModifiedAt   int64  `json:"modifiedAt" bson:"modifiedAt"`
