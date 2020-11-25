@@ -431,6 +431,56 @@ func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.Request
 	return nil
 }
 
+func (e *AuthHandler) UpdatePermission(ctx context.Context, req *protoauth.RequestPushPermission, res *protoauth.ResponseAuth) error {
+	log.Info("Received auth.UpdatePermission request")
+
+	if req.UserID == "" {
+		log.Error("Invalid userID")
+		return status.Error(codes.InvalidArgument, "Invalid userID")
+	}
+
+	reqAuth := &auth.Auth{
+		User: req.UserID,
+	}
+
+	parsedMap := make(map[string]interface{})
+	for key, value := range req.Permission.Access {
+		parsedMap[key] = value
+	}
+
+	newPermission := &auth.Permission{
+		ID:     req.Permission.Id,
+		Access: parsedMap,
+	}
+
+	err := newPermission.Validate()
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	updatedAuth, err := reqAuth.UpdatePermission(*newPermission)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	//RESPONSE
+	res.Id = updatedAuth.ID
+	res.User = updatedAuth.User
+	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.CreatedAt = updatedAuth.CreatedAt
+	res.ModifiedAt = updatedAuth.ModifiedAt
+	res.DeletedAt = updatedAuth.DeletedAt
+
+	err = pubMofidied.Publish(ctx, res)
+	if err != nil {
+		log.Error(err)
+	}
+
+	return nil
+}
+
 func (e *AuthHandler) DeletePermission(ctx context.Context, req *protoauth.RequestDeletePermission, res *protoauth.ResponseAuth) error {
 	log.Info("Received auth.DeletePermission request")
 	if req.UserID == "" {

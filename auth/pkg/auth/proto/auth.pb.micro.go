@@ -51,6 +51,7 @@ type AuthService interface {
 	Update(ctx context.Context, in *RequestUpdateAuth, opts ...client.CallOption) (*ResponseAuth, error)
 	Delete(ctx context.Context, in *RequestAuthID, opts ...client.CallOption) (*ResponseAuth, error)
 	PushPermission(ctx context.Context, in *RequestPushPermission, opts ...client.CallOption) (*ResponseAuth, error)
+	UpdatePermission(ctx context.Context, in *RequestPushPermission, opts ...client.CallOption) (*ResponseAuth, error)
 	DeletePermission(ctx context.Context, in *RequestDeletePermission, opts ...client.CallOption) (*ResponseAuth, error)
 }
 
@@ -156,6 +157,16 @@ func (c *authService) PushPermission(ctx context.Context, in *RequestPushPermiss
 	return out, nil
 }
 
+func (c *authService) UpdatePermission(ctx context.Context, in *RequestPushPermission, opts ...client.CallOption) (*ResponseAuth, error) {
+	req := c.c.NewRequest(c.name, "Auth.UpdatePermission", in)
+	out := new(ResponseAuth)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authService) DeletePermission(ctx context.Context, in *RequestDeletePermission, opts ...client.CallOption) (*ResponseAuth, error) {
 	req := c.c.NewRequest(c.name, "Auth.DeletePermission", in)
 	out := new(ResponseAuth)
@@ -178,6 +189,7 @@ type AuthHandler interface {
 	Update(context.Context, *RequestUpdateAuth, *ResponseAuth) error
 	Delete(context.Context, *RequestAuthID, *ResponseAuth) error
 	PushPermission(context.Context, *RequestPushPermission, *ResponseAuth) error
+	UpdatePermission(context.Context, *RequestPushPermission, *ResponseAuth) error
 	DeletePermission(context.Context, *RequestDeletePermission, *ResponseAuth) error
 }
 
@@ -192,6 +204,7 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		Update(ctx context.Context, in *RequestUpdateAuth, out *ResponseAuth) error
 		Delete(ctx context.Context, in *RequestAuthID, out *ResponseAuth) error
 		PushPermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error
+		UpdatePermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error
 		DeletePermission(ctx context.Context, in *RequestDeletePermission, out *ResponseAuth) error
 	}
 	type Auth struct {
@@ -239,6 +252,10 @@ func (h *authHandler) Delete(ctx context.Context, in *RequestAuthID, out *Respon
 
 func (h *authHandler) PushPermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error {
 	return h.AuthHandler.PushPermission(ctx, in, out)
+}
+
+func (h *authHandler) UpdatePermission(ctx context.Context, in *RequestPushPermission, out *ResponseAuth) error {
+	return h.AuthHandler.UpdatePermission(ctx, in, out)
 }
 
 func (h *authHandler) DeletePermission(ctx context.Context, in *RequestDeletePermission, out *ResponseAuth) error {

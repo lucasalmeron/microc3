@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-/*type Permission struct {
+/* Permission Access Map {
 	ID          string `json:"id" bson:"_id,omitempty"`
 	Read        bool   `json:"read" bson:"read"`
 	Write       bool   `json:"write" bson:"write"`
@@ -38,5 +38,6 @@ type Repository interface {
 	Update(ctx context.Context, auth Auth) (*Auth, error)
 	Delete(ctx context.Context, authID string) (*Auth, error)
 	PushPermission(ctx context.Context, userID string, permission Permission) (*Auth, error)
+	UpdatePermission(ctx context.Context, userID string, permission Permission) (*Auth, error)
 	DeletePermission(ctx context.Context, userID string, permissionID string) (*Auth, error)
 }

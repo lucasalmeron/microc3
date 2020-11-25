@@ -221,6 +221,41 @@ func (service *AuthService) PushPermission(ctx context.Context, userID string, p
 	return &auth, nil
 }
 
+func (service *AuthService) UpdatePermission(ctx context.Context, userID string, permission auth.Permission) (*auth.Auth, error) {
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	permissionObjectID, err := primitive.ObjectIDFromHex(permission.ID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	var auth auth.Auth
+
+	//after := options.After
+	opt := options.UpdateOptions{
+		//ReturnDocument: &after,
+	}
+
+	updated, err := service.collection.UpdateOne(
+		ctx,
+		bson.D{{"user", userObjectID}, {"permissions._id", permissionObjectID}},
+		bson.M{
+			"$set": bson.M{"permissions.$.access": permission.Access},
+		},
+		&opt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(updated)
+
+	return &auth, nil
+}
+
 func (service *AuthService) DeletePermission(ctx context.Context, userID string, permissionID string) (*auth.Auth, error) {
 	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {

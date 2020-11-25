@@ -13,6 +13,7 @@ service Auth {
 	rpc Update(RequestUpdateAuth) returns (ResponseAuth) {}
 	rpc Delete(RequestAuthID) returns (ResponseAuth) {}
 	rpc PushPermission(RequestPushPermission) returns (ResponseAuth) {}
+	rpc UpdatePermission(RequestPushPermission) returns (ResponseAuth) {}
 	rpc DeletePermission(RequestDeletePermission) returns (ResponseAuth) {}
 }
 

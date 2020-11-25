@@ -3,7 +3,6 @@ package httphandler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -79,7 +78,6 @@ func (h QueryPointsHandler) GetByName(w http.ResponseWriter, r *http.Request) {
 	response, err := queryPointsClient.GetByName(context.TODO(), &protoqp.RequestQueryPointQuery{
 		Query: name,
 	})
-	fmt.Println(response)
 
 	if err != nil {
 		log.Print(err)
@@ -87,7 +85,7 @@ func (h QueryPointsHandler) GetByName(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
 		return
 	}
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response.QueryPoints)
 }
 
 func (h QueryPointsHandler) GetPaginated(w http.ResponseWriter, r *http.Request) {

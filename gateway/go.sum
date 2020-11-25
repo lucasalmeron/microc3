@@ -301,6 +301,8 @@ github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e h1:uj7xJ
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111162406-2ff09f70343e/go.mod h1:5iStXcZcCCoPx8SZxp5MJRpxVVNJPlvYvectzAOte88=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68 h1:VyP4+uULxKgCF15ZFL6DCrOHWrKOrnoaDTVfWjFVFXc=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68/go.mod h1:/zsjmbIgaJPpiDRcziG6tuQ8cic9MFYh8zN9Ao2/7N0=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201111210833-6b5aaaab6010 h1:FQ9krII3KMtO4222LiP5GmJdSZm+v2ZOSTmyQhdD3NA=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201111210833-6b5aaaab6010/go.mod h1:zI26C9dMK3oqJV+BVJOL/mHt6TdFjKmInKLpuyX5Lec=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201103142204-8bb6965c846f/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111161033-c2ee06597534/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e h1:n8ZmgbOlnBea98wiqxCJzOmIMxCvvpPSef7/AGi89SY=
@@ -309,6 +311,8 @@ github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111180840-439ebebfaa68 h
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111180840-439ebebfaa68/go.mod h1:tmYek4DzAC+D9HPaQMYCnYqAtMEc2XWwZ6yx7HjOryM=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111210833-6b5aaaab6010 h1:mJ+bxGpWnuZvuqOJ1UYXDa93nq9tf1UDPItXpRX32fQ=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111210833-6b5aaaab6010/go.mod h1:sN5Zn90E6uz2nHe4Gyvj+2+1ITxyMklOZIEtJ/45+0k=
+github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111220146-9d2aaa4f288f h1:ElQFayWJyIkALo20AoCy6dHdQ66M6ry/Cjrt8qh9sgE=
+github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111220146-9d2aaa4f288f/go.mod h1:sN5Zn90E6uz2nHe4Gyvj+2+1ITxyMklOZIEtJ/45+0k=
 github.com/lucasalmeron/microc3/users v0.0.0-20200923231205-cdef43fcb4be/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5 h1:agE5Xcr/UDLAae2SFKRyBnhXgr1s5HzOg9sJO9EV9ts=
 github.com/lucasalmeron/microc3/users v0.0.0-20200930205716-85524c0bddd5/go.mod h1:KDjnewMKfqDRlvJY/zxCIalHQ7GWtFk3NPRuzTCz9/Y=
@@ -319,6 +323,8 @@ github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e h1:2cPS
 github.com/lucasalmeron/microc3/users v0.0.0-20201111162406-2ff09f70343e/go.mod h1:zNgXcY9INaBb2lc7x5lfBRfwi81JaiBXDpBwqrVVdYE=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68 h1:9t4HXbPEHlu63P2+hmnUe/ccQKPZoTENPp9gLhAM/AE=
 github.com/lucasalmeron/microc3/users v0.0.0-20201111180840-439ebebfaa68/go.mod h1:Ag0OtQMX+Enpm582gXQLirp2oT1zv6LZcsJu4qfHWrk=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111210833-6b5aaaab6010 h1:I6QVjqjMz6/J/0E8ceEAIl4tcRjabJELDBtelwokdws=
+github.com/lucasalmeron/microc3/users v0.0.0-20201111210833-6b5aaaab6010/go.mod h1:Div2ceTbPx2JVskT1yXEJJvM8RHgZk1U0NwYB2f5ZLE=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/marten-seemann/chacha20 v0.2.0/go.mod h1:HSdjFau7GzYRj+ahFNwsO3ouVJr1HFkWoEwNDb4TMtE=

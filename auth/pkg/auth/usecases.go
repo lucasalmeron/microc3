@@ -46,6 +46,10 @@ func (auth *Auth) PushPermission(permission Permission) (*Auth, error) {
 	return repository.PushPermission(context.TODO(), auth.User, permission)
 }
 
+func (auth *Auth) UpdatePermission(permission Permission) (*Auth, error) {
+	return repository.UpdatePermission(context.TODO(), auth.User, permission)
+}
+
 func (auth *Auth) DeletePermission(permissionID string) (*Auth, error) {
 	return repository.DeletePermission(context.TODO(), auth.User, permissionID)
 }
