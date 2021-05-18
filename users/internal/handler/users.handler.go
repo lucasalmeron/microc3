@@ -195,13 +195,13 @@ func (e *UsersHandler) GetPaginatedWithQP(ctx context.Context, req *protousers.R
 	res.PageNumber = paginatedUsers.PageNumber
 	res.NumberOfPages = paginatedUsers.NumberOfPages
 
-	//MAKE STREAM
-	stream, err := qpClient.GetByIDs(context.TODO())
-	if err != nil {
-		log.Error(err)
-		return status.Error(codes.Internal, err.Error())
-	}
 	for i, u := range paginatedUsers.Data {
+		//MAKE STREAM
+		stream, err := qpClient.GetByIDs(context.TODO())
+		if err != nil {
+			log.Error(err)
+			return status.Error(codes.Internal, err.Error())
+		}
 
 		querypointsIDs, err := authClient.GetQueryPointsByUserID(context.TODO(), &protoauth.RequestUserID{User: u.ID})
 		if err != nil {

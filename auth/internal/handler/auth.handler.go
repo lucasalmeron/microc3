@@ -18,10 +18,12 @@ import (
 	"google.golang.org/grpc/status"
 
 	protoauth "github.com/lucasalmeron/microc3/auth/pkg/auth/proto"
+	protoqp "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints/proto"
 	protousers "github.com/lucasalmeron/microc3/users/pkg/users/proto"
 
 	authroutes "github.com/lucasalmeron/microc3/auth/internal/routes"
 	auth "github.com/lucasalmeron/microc3/auth/pkg/auth"
+	queryPoint "github.com/lucasalmeron/microc3/querypoints/pkg/querypoints"
 )
 
 var (
@@ -29,6 +31,7 @@ var (
 	pubMofidied micro.Event
 	pubDeleted  micro.Event
 	userClient  protousers.UsersService
+	qpClient    protoqp.QueryPointsService
 	tokenSecret = "565985%$#fjgSAS" ///ADD FROM ENVIRONMENT
 )
 
@@ -38,15 +41,40 @@ func InitEvents(c client.Client) {
 	pubDeleted = micro.NewEvent("go.micro.auth.deleted", c)
 	//create gRPC clients//
 	userClient = protousers.NewUsersService("go.micro.service.users", c)
+	qpClient = protoqp.NewQueryPointsService("go.micro.service.querypoints", c)
 }
 
-func buildProtoPermission(auth auth.Auth) []*protoauth.Permission {
+func buildProtoPermission(auth auth.Auth) ([]*protoauth.Permission, error) {
 	permissions := make([]*protoauth.Permission, 0)
 
 	for _, p := range auth.Permissions {
 		parsedMap := make(map[string]string)
 		for key, value := range p.Access {
-			parsedMap[key] = fmt.Sprintf("%v", value)
+			if key == "queryPoint" {
+				respQP, err := qpClient.GetByID(context.TODO(), &protoqp.RequestQueryPointID{
+					Id: fmt.Sprintf("%v", value),
+				})
+				if err != nil {
+					log.Error(err)
+					return nil, err
+				}
+				var queryPoint queryPoint.QueryPoint
+				queryPoint.ID = respQP.Id
+				queryPoint.Name = respQP.Name
+				queryPoint.Address = respQP.Address
+				queryPoint.District = respQP.District
+				queryPoint.Department = respQP.Department
+				queryPoint.Phone = respQP.Phone
+				/* more fields ....*/
+				parsedQP, err := json.Marshal(queryPoint)
+				if err != nil {
+					log.Error(err)
+					return nil, err
+				}
+				parsedMap[key] = string(parsedQP)
+			} else {
+				parsedMap[key] = fmt.Sprintf("%v", value)
+			}
 		}
 		permissions = append(permissions, &protoauth.Permission{
 			Id:     p.ID,
@@ -54,7 +82,7 @@ func buildProtoPermission(auth auth.Auth) []*protoauth.Permission {
 		})
 	}
 
-	return permissions
+	return permissions, nil
 
 	/*return &protoauth.ResponseAuth{
 		Id:          auth.ID,
@@ -202,10 +230,15 @@ func (e *AuthHandler) GetByID(ctx context.Context, req *protoauth.RequestAuthID,
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*foundAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
 	//RESPONSE+
 	res.Id = foundAuth.ID
 	res.User = foundAuth.User
-	res.Permissions = buildProtoPermission(*foundAuth)
+	res.Permissions = permissions
 	res.CreatedAt = foundAuth.CreatedAt
 	res.ModifiedAt = foundAuth.ModifiedAt
 	res.DeletedAt = foundAuth.DeletedAt
@@ -222,11 +255,17 @@ func (e *AuthHandler) GetByUserID(ctx context.Context, req *protoauth.RequestUse
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*foundAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE+
 	res.Id = foundAuth.ID
 	res.User = foundAuth.User
 	res.Admin = foundAuth.Admin
-	res.Permissions = buildProtoPermission(*foundAuth)
+	res.Permissions = permissions
 	res.CreatedAt = foundAuth.CreatedAt
 	res.ModifiedAt = foundAuth.ModifiedAt
 	res.DeletedAt = foundAuth.DeletedAt
@@ -295,9 +334,15 @@ func (e *AuthHandler) Create(ctx context.Context, req *protoauth.RequestCreateAu
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*createdAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = createdAuth.ID
-	res.Permissions = buildProtoPermission(*createdAuth)
+	res.Permissions = permissions
 	res.CreatedAt = createdAuth.CreatedAt
 	res.ModifiedAt = createdAuth.ModifiedAt
 	res.DeletedAt = createdAuth.DeletedAt
@@ -343,9 +388,15 @@ func (e *AuthHandler) Update(ctx context.Context, req *protoauth.RequestUpdateAu
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*updatedAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = updatedAuth.ID
-	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.Permissions = permissions
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt
 	res.DeletedAt = updatedAuth.DeletedAt
@@ -367,9 +418,15 @@ func (e *AuthHandler) Delete(ctx context.Context, req *protoauth.RequestAuthID, 
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*deletedAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = deletedAuth.ID
-	res.Permissions = buildProtoPermission(*deletedAuth)
+	res.Permissions = permissions
 	res.CreatedAt = deletedAuth.CreatedAt
 	res.ModifiedAt = deletedAuth.ModifiedAt
 	res.DeletedAt = deletedAuth.DeletedAt
@@ -415,10 +472,16 @@ func (e *AuthHandler) PushPermission(ctx context.Context, req *protoauth.Request
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*updatedAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = updatedAuth.ID
 	res.User = updatedAuth.User
-	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.Permissions = permissions
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt
 	res.DeletedAt = updatedAuth.DeletedAt
@@ -465,10 +528,16 @@ func (e *AuthHandler) UpdatePermission(ctx context.Context, req *protoauth.Reque
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*updatedAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = updatedAuth.ID
 	res.User = updatedAuth.User
-	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.Permissions = permissions
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt
 	res.DeletedAt = updatedAuth.DeletedAt
@@ -501,10 +570,16 @@ func (e *AuthHandler) DeletePermission(ctx context.Context, req *protoauth.Reque
 		return status.Error(codes.Internal, err.Error())
 	}
 
+	permissions, err := buildProtoPermission(*updatedAuth)
+	if err != nil {
+		log.Error(err)
+		return status.Error(codes.Internal, err.Error())
+	}
+
 	//RESPONSE
 	res.Id = updatedAuth.ID
 	res.User = updatedAuth.User
-	res.Permissions = buildProtoPermission(*updatedAuth)
+	res.Permissions = permissions
 	res.CreatedAt = updatedAuth.CreatedAt
 	res.ModifiedAt = updatedAuth.ModifiedAt
 	res.DeletedAt = updatedAuth.DeletedAt

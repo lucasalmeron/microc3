@@ -32,6 +32,12 @@ func LoadUsersRoutes() {
 		},
 		{
 			ID:          uuid.New().String(),
+			Path:        "/api/users/permissions/{userID:[0-9a-fA-F]{24}}",
+			Method:      http.MethodGet,
+			Permissions: []string{"admin"},
+		},
+		{
+			ID:          uuid.New().String(),
 			Path:        "/api/users/paginated",
 			Method:      http.MethodPost,
 			Permissions: []string{"admin"},
@@ -51,6 +57,12 @@ func LoadUsersRoutes() {
 		{
 			ID:          uuid.New().String(),
 			Path:        "/api/users/pushpermission",
+			Method:      http.MethodPut,
+			Permissions: []string{},
+		},
+		{
+			ID:          uuid.New().String(),
+			Path:        "/api/users/updatepermission",
 			Method:      http.MethodPut,
 			Permissions: []string{},
 		},

@@ -36,12 +36,15 @@ func InitUserHandler(router *mux.Router) {
 	router.Path("/users/id/{userID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetByID).Methods(http.MethodGet, http.MethodOptions)
 	router.Path("/users/email/{email}").HandlerFunc(handler.GetByEmail).Methods(http.MethodGet, http.MethodOptions)
 
+	router.Path("/users/permissions/{userID:[0-9a-fA-F]{24}}").HandlerFunc(handler.GetPermissionsByUserID).Methods(http.MethodGet, http.MethodOptions)
+
 	router.Path("/users/login").HandlerFunc(handler.LogIn).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users/paginated").HandlerFunc(handler.GetPaginated).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users").HandlerFunc(handler.Create).Methods(http.MethodPost, http.MethodOptions)
 	router.Path("/users").HandlerFunc(handler.Update).Methods(http.MethodPut, http.MethodOptions)
 
 	router.Path("/users/pushpermission").HandlerFunc(handler.PushPermission).Methods(http.MethodPut, http.MethodOptions)
+	router.Path("/users/updatepermission").HandlerFunc(handler.UpdatePermission).Methods(http.MethodPut, http.MethodOptions)
 	router.Path("/users/deletepermission").HandlerFunc(handler.DeletePermission).Methods(http.MethodPut, http.MethodOptions)
 }
 
@@ -79,6 +82,21 @@ func (h UsersHandler) GetByEmail(w http.ResponseWriter, r *http.Request) {
 	userEmail := mux.Vars(r)["email"]
 
 	response, err := userClient.GetUserByEmail(context.TODO(), &protousers.RequestUserEmail{Email: userEmail})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) GetPermissionsByUserID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	userID := mux.Vars(r)["userID"]
+
+	response, err := authClient.GetByUserID(context.TODO(), &protoauth.RequestUserID{User: userID})
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -245,8 +263,6 @@ func (h UsersHandler) PushPermission(w http.ResponseWriter, r *http.Request) {
 		} `json:"permission"`
 	}{}
 
-	//accessMap := make(map[string]string)
-
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
@@ -287,6 +303,71 @@ func (h UsersHandler) PushPermission(w http.ResponseWriter, r *http.Request) {
 	response, err := authClient.PushPermission(context.TODO(), &protoauth.RequestPushPermission{
 		UserID: req.User,
 		Permission: &protoauth.Permission{
+			Access: accessMap,
+		},
+	})
+	if err != nil {
+		log.Print(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, errorprovider.ConvertToJSON(err)})
+		return
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h UsersHandler) UpdatePermission(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	req := struct {
+		User       string `json:"user"`
+		Permission struct {
+			ID     string            `json:"id"`
+			Access map[string]string `json:"access"`
+		} `json:"permission"`
+	}{}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(&errorprovider.HttpError{http.StatusInternalServerError, "Error unmarshalling request body"})
+		return
+	}
+
+	/*
+		Read        bool
+		Write       bool
+		Responsible bool
+		Query       bool
+		Health      bool
+	*/
+	accessMap := make(map[string]string)
+
+	// REMEMBER TO VALIDATE QUERYPOINT//
+	for key, value := range req.Permission.Access {
+		if key == "queryPoint" {
+			accessMap["queryPoint"] = value
+		}
+		if key == "read" {
+			accessMap["read"] = value
+		}
+		if key == "write" {
+			accessMap["write"] = value
+		}
+		if key == "responsible" {
+			accessMap["responsible"] = value
+		}
+		if key == "query" {
+			accessMap["query"] = value
+		}
+		if key == "health" {
+			accessMap["health"] = value
+		}
+	}
+
+	response, err := authClient.UpdatePermission(context.TODO(), &protoauth.RequestPushPermission{
+		UserID: req.User,
+		Permission: &protoauth.Permission{
+			Id:     req.Permission.ID,
 			Access: accessMap,
 		},
 	})

@@ -303,6 +303,8 @@ github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68 h1:VyP4+
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111180840-439ebebfaa68/go.mod h1:/zsjmbIgaJPpiDRcziG6tuQ8cic9MFYh8zN9Ao2/7N0=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111210833-6b5aaaab6010 h1:FQ9krII3KMtO4222LiP5GmJdSZm+v2ZOSTmyQhdD3NA=
 github.com/lucasalmeron/microc3/auth v0.0.0-20201111210833-6b5aaaab6010/go.mod h1:zI26C9dMK3oqJV+BVJOL/mHt6TdFjKmInKLpuyX5Lec=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201125231916-fc7196b8e21f h1:NV9OdPZvT5UiiXGNcec5lQGsHtPXki64vykthX51N+I=
+github.com/lucasalmeron/microc3/auth v0.0.0-20201125231916-fc7196b8e21f/go.mod h1:zI26C9dMK3oqJV+BVJOL/mHt6TdFjKmInKLpuyX5Lec=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201103142204-8bb6965c846f/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111161033-c2ee06597534/go.mod h1:HMBADJmKpCrNv4jtDYQRL8WAVoAtfmqHPspX1MWjH5c=
 github.com/lucasalmeron/microc3/querypoints v0.0.0-20201111162406-2ff09f70343e h1:n8ZmgbOlnBea98wiqxCJzOmIMxCvvpPSef7/AGi89SY=

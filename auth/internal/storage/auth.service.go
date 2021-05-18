@@ -210,6 +210,7 @@ func (service *AuthService) PushPermission(ctx context.Context, userID string, p
 				{"_id", primitive.NewObjectID()},
 				{"access", permission.Access},
 			}},
+			"$set": bson.M{"modifiedAt": time.Now().Unix()},
 		},
 		&opt,
 	).Decode(&auth)
@@ -234,24 +235,22 @@ func (service *AuthService) UpdatePermission(ctx context.Context, userID string,
 	}
 	var auth auth.Auth
 
-	//after := options.After
-	opt := options.UpdateOptions{
-		//ReturnDocument: &after,
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
 	}
 
-	updated, err := service.collection.UpdateOne(
+	err = service.collection.FindOneAndUpdate(
 		ctx,
 		bson.D{{"user", userObjectID}, {"permissions._id", permissionObjectID}},
 		bson.M{
-			"$set": bson.M{"permissions.$.access": permission.Access},
+			"$set": bson.M{"permissions.$.access": permission.Access, "modifiedAt": time.Now().Unix()},
 		},
 		&opt,
-	)
+	).Decode(&auth)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(updated)
 
 	return &auth, nil
 }
@@ -281,6 +280,7 @@ func (service *AuthService) DeletePermission(ctx context.Context, userID string,
 			"$pull": bson.M{"permissions": bson.D{
 				{"_id", permissionObjectID},
 			}},
+			"$set": bson.M{"modifiedAt": time.Now().Unix()},
 		},
 		&opt,
 	).Decode(&auth)
